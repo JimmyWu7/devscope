@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  githubId  String   @unique
+  username  String   @unique
+  name      String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+
+  repositories Repository[]
+  syncStatus   SyncStatus?
+}
+
+model Repository {
+  id              String  @id @default(cuid())
+  githubRepoId    String  @unique
+  name            String
+  description     String?
+  primaryLanguage String?
+  stars           Int
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  commits Commit[]
+}
+
+model Commit {
+  id              String   @id @default(cuid())
+  githubCommitSha String   @unique
+  message         String
+  committedAt     DateTime
+
+  repository   Repository @relation(fields: [repositoryId], references: [id])
+  repositoryId String
+}
+
+model SyncStatus {
+  userId       String   @id
+  lastSyncedAt DateTime?
+  status       String
+
+  user User @relation(fields: [userId], references: [id])
+}
+
