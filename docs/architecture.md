@@ -15,6 +15,7 @@ This document describes the high-level system architecture for DevScope.
 - Implemented using **Next.js Route Handlers** (`/app/api`)
 - Integrates with GitHub REST and GraphQL APIs
 - Uses Prisma ORM for database access
+- Route handlers are responsible for authentication, GitHub API orchestration, and database writes
 
 ---
 

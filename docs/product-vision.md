@@ -18,4 +18,4 @@ GitHub provides data, but not insight. There is no clear summary of recent contr
 ---
 
 ## 💡 Value Proposition
-**DevScope helps developers showcase their real development activity by transforming GitHub data into clear insights and public profiles.**
+**DevScope helps developers communicate their real development activity by transforming raw GitHub data into clear insights and recruiter-friendly public profiles.**

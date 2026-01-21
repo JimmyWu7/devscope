@@ -1,7 +1,7 @@
 # DevScope
 
 ## Overview
-DevScope is a developer analytics tool that transforms raw GitHub activity into meaningful insights. It helps developers clearly showcase their work while allowing recruiters to quickly understand recent contributions and skills.
+DevScope is a developer intelligence platform that transforms raw GitHub activity into meaningful insights. It helps developers clearly showcase their work while allowing recruiters to quickly understand recent contributions and skills.
 
 ---
 
@@ -23,7 +23,7 @@ DevScope aggregates GitHub data and presents it through a clean dashboard and pu
   - Repository list
   - Commit activity count
   - Language usage
-- Public public profile at `/u/[username]`
+- Public profile at `/u/[username]`
 - Database persistence
 
 Out-of-scope features are intentionally excluded for focus.
