@@ -1,21 +1,43 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+type SyncStatus = {
+  status: string;
+  lastSyncedAt?: string;
+};
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [repoCount, setRepoCount] = useState<number | null>(null);
+  const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
+
+  const loadDashboard = async () => {
+    const res = await fetch('/api/dashboard');
+    const data = await res.json();
+    setRepoCount(data.repoCount);
+    setSyncStatus(data.syncStatus);
+  };
+
+  useEffect(() => {
+    loadDashboard();
+  }, []);
 
   const handleSync = async () => {
     setLoading(true);
     setMessage('');
 
     try {
+      setSyncStatus((prev) =>
+        prev ? { ...prev, status: 'syncing' } : { status: 'syncing' },
+      );
       const res = await fetch('/api/github/sync');
       const data = await res.json();
 
       if (res.ok) {
-        setMessage(`Synced ${data.syncedRepos} repositories!`)
+        await loadDashboard();
+        setMessage(`Synced ${data.syncedRepos} repositories!`);
       } else {
         setMessage(`Error: ${data.error}`);
       }
@@ -27,8 +49,23 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="mb-4 text-2xl font-semibold">Dashboard</h1>
+    <div className="space-y-4 p-6">
+      <h1 className="text-2xl font-semibold">Dashboard</h1>
+
+      <div className="space-y-2 rounded border p-4">
+        <p>
+          <strong>Repositories:</strong> {repoCount ?? '—'}
+        </p>
+        <p>
+          <strong>Last Sync:</strong>{' '}
+          {syncStatus?.lastSyncedAt
+            ? new Date(syncStatus.lastSyncedAt).toLocaleString()
+            : 'Never'}
+        </p>
+        <p>
+          <strong>Status:</strong> {syncStatus?.status ?? 'idle'}
+        </p>
+      </div>
 
       <button
         className="rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
@@ -38,7 +75,7 @@ export default function DashboardPage() {
         {loading ? 'Syncing...' : 'Sync GitHub Data'}
       </button>
 
-      {message && <p className="mt-4">{message}</p>}
+      {message && <p>{message}</p>}
     </div>
   );
 }
