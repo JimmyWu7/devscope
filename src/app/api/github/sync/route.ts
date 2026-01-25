@@ -19,9 +19,9 @@ export async function GET(req: Request) {
 
   try {
     const token = (session as any).accessToken;
-    const count = await syncRepos(userId, token);
+    const result = await syncRepos(userId, token);
 
-    return NextResponse.json({ success: true, syncedRepos: count });
+    return NextResponse.json({ success: true, ...result });
   } catch (err: any) {
     return NextResponse.json(
       { success: false, error: err.message },

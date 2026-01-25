@@ -1,5 +1,6 @@
 'use client';
 
+import CommitActivityChart from '@/components/dashboard/CommitActivityChart';
 import { useEffect, useState } from 'react';
 
 type SyncStatus = {
@@ -12,12 +13,19 @@ export default function DashboardPage() {
   const [message, setMessage] = useState('');
   const [repoCount, setRepoCount] = useState<number | null>(null);
   const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
+  const [activityData, setActivityData] = useState<
+    { date: string; count: number }[]
+  >([]);
 
   const loadDashboard = async () => {
     const res = await fetch('/api/dashboard');
     const data = await res.json();
     setRepoCount(data.repoCount);
     setSyncStatus(data.syncStatus);
+
+    const activityRes = await fetch('/api/analytics/commits');
+    const activity = await activityRes.json();
+    setActivityData(activity);
   };
 
   useEffect(() => {
@@ -37,7 +45,9 @@ export default function DashboardPage() {
 
       if (res.ok) {
         await loadDashboard();
-        setMessage(`Synced ${data.syncedRepos} repositories!`);
+        setMessage(
+          `Synced ${data.repos} repositories and ${data.commits} commits.`,
+        );
       } else {
         setMessage(`Error: ${data.error}`);
       }
@@ -76,6 +86,7 @@ export default function DashboardPage() {
       </button>
 
       {message && <p>{message}</p>}
+      {activityData.length > 0 && <CommitActivityChart data={activityData} />}
     </div>
   );
 }

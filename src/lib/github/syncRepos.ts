@@ -7,12 +7,10 @@ export async function syncRepos(userId: string, accessToken: string) {
     where: { userId },
     update: {
       status: 'syncing',
-      lastSyncedAt: new Date(),
     },
     create: {
       userId,
       status: 'syncing',
-      lastSyncedAt: new Date(),
     },
   });
 
@@ -20,8 +18,10 @@ export async function syncRepos(userId: string, accessToken: string) {
     // Fetch GitHub repos
     const repos = await fetchGitHub('/user/repos?per_page=100', accessToken);
 
+    let totalCommits = 0;
+
     for (const repo of repos) {
-      await prisma.repository.upsert({
+      const dbRepo = await prisma.repository.upsert({
         where: { githubRepoId: String(repo.id) },
         update: {
           name: repo.name,
@@ -39,6 +39,29 @@ export async function syncRepos(userId: string, accessToken: string) {
           userId,
         },
       });
+      // Fetch commits (last 30)
+      const commits = await fetchGitHub(
+        `/repos/${repo.owner.login}/${repo.name}/commits?per_page=30`,
+        accessToken,
+      );
+      for (const commit of commits) {
+        const existing = await prisma.commit.findUnique({
+          where: { githubCommitSha: commit.sha },
+        });
+
+        if (!existing) {
+          await prisma.commit.create({
+            data: {
+              githubCommitSha: commit.sha,
+              message: commit.commit.message,
+              committedAt: new Date(commit.commit.author.date),
+              repositoryId: dbRepo.id,
+            },
+          });
+
+          totalCommits++;
+        }
+      }
     }
 
     // Mark sync as successful
@@ -49,7 +72,10 @@ export async function syncRepos(userId: string, accessToken: string) {
         lastSyncedAt: new Date(),
       },
     });
-    return repos.length;
+    return {
+      repos: repos.length,
+      commits: totalCommits,
+    };
   } catch (error) {
     // Mark sync as failed
     await prisma.syncStatus.update({
