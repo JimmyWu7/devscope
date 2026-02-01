@@ -1,31 +1,34 @@
-import { getServerSession } from 'next-auth';
-import { NextResponse } from 'next/server';
-import { authOptions } from '../../auth/[...nextauth]/route';
-import { syncRepos } from '@/lib/github/syncRepos';
+"use server";
 
-export async function GET(req: Request) {
-  const session = await getServerSession(authOptions);
+import { auth, prisma } from "@/lib/auth";
+import { syncGitHubData } from "@/lib/github";
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
 
-  if (!session || !(session as any).accessToken || !(session as any).userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+export async function POST() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Look up user in DB
-  const userId = (session as any).userId;
+  const account = await prisma.account.findFirst({
+    where: { userId: session.user.id, providerId: "github" },
+  });
 
-  if (!userId) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 });
-  }
-
-  try {
-    const token = (session as any).accessToken;
-    const result = await syncRepos(userId, token);
-
-    return NextResponse.json({ success: true, ...result });
-  } catch (err: any) {
+  if (!account?.accessToken) {
     return NextResponse.json(
-      { success: false, error: err.message },
-      { status: 500 },
+      { error: "No GitHub token found" },
+      { status: 400 }
     );
   }
+
+  await syncGitHubData({
+    userId: session.user.id,
+    accessToken: account.accessToken,
+  });
+
+  return NextResponse.json({ success: true });
 }

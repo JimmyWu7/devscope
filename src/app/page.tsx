@@ -1,7 +1,12 @@
-export default function Home() {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <h1 className="text-2xl font-semibold">DevScope</h1>
-    </main>
-  );
-}
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import React from "react";
+
+const Home = async () => {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (session == null) return redirect("/auth/login");
+  return <div>Home</div>;
+};
+
+export default Home;
