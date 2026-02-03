@@ -27,6 +27,7 @@ model User {
   githubProfiles GithubProfile[]
   githubRepos    GithubRepo[]
   githubSyncs    GithubSync[]
+  jobApplications JobApplication[]
 
   @@unique([email])
   @@map("user")
@@ -122,4 +123,36 @@ model GithubSync {
   syncedAt  DateTime
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum JobApplicationStatus {
+  APPLIED
+  INTERVIEW
+  OFFER
+  REJECTED
+}
+
+model JobApplication {
+  id             String   @id @default(cuid())
+  userId         String
+  company        String
+  role           String
+  applicationUrl String?
+  salaryMin      Int
+  salaryMax      Int
+  salaryCurrency String?  @default("USD")
+  location       String?
+  status         JobApplicationStatus
+  dateApplied    DateTime
+  datePosted     DateTime?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([dateApplied])
+  @@map("job_application")
 }

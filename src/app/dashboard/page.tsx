@@ -1,5 +1,5 @@
 import SyncGithubButton from "@/components/github/SyncGithubButton";
-import { AppSidebar } from "@/components/layout/AppSideBar";
+import { AppSidebar } from "@/components/layout/sidebar/AppSideBar";
 import { ChartAreaInteractive } from "@/components/layout/dashboard/ChatAreaInteractive";
 import { CommitsCard } from "@/components/layout/dashboard/CommitsCard";
 import { SiteHeader } from "@/components/layout/SiteHeader";
@@ -8,6 +8,7 @@ import { auth, prisma } from "@/lib/auth";
 import { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import ApplicationsTracker from "@/components/layout/dashboard/ApplicationsTracker";
 
 export const metadata: Metadata = {
   title: "DevScope Dashboard",
@@ -79,10 +80,11 @@ const page = async () => {
             <div className="@container/main flex flex-1 flex-col gap-2">
               <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
                 <CommitsCard />
-                <div className="px-4 lg:px-6">
-                  <ChartAreaInteractive />
-                </div>
-                {/* <DataTable data={data} /> */}
+                {/* <div className="px-4 lg:px-6"> */}
+                  {/* <ChartAreaInteractive /> */}
+                {/* </div> */}
+                {/* Table here */}
+                <ApplicationsTracker />
               </div>
             </div>
           </div>
