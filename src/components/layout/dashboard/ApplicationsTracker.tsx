@@ -1,12 +1,18 @@
 "use client";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import useSWR from "swr";
 
 import { DataTable } from "@/components/data-table";
 import { DataTableColumns } from "@/components/data-table-columns";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-// import { data } from "@/constants/table-data";
+
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch job applications");
+  return res.json();
+};
 
 export interface JobApplication {
   id: string;
@@ -26,41 +32,20 @@ export interface JobApplication {
 }
 
 const ApplicationsTracker = () => {
-  const [data, setData] = useState<JobApplication[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading, error } = useSWR("/api/job-applications", fetcher);
+  const mounted = useRef(true);
 
-  useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const res = await fetch("/api/job-applications");
-        if (!res.ok) throw new Error("Failed to fetch job applications");
+  if (error) {
+    toast.error("Failed to load job applications");
+  }
 
-        const applications: any[] = await res.json(); // API returns JSON
-        // console.log("applications", applications);
-
-        // Convert date strings to Date objects
-        const formatted: JobApplication[] = applications.map((app) => ({
-          ...app,
-          dateApplied: new Date(app.dateApplied),
-          datePosted: new Date(app.datePosted),
-          createdAt: new Date(app.createdAt),
-          updatedAt: new Date(app.updatedAt),
-        }));
-        // console.log("Formatted", formatted);
-
-
-        setData(formatted);
-      } catch (err) {
-        // console.log("Application Tracker");
-        // console.error(err);
-        toast.error("Failed to load job applications");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchApplications();
-  }, []);
+  const formatted: JobApplication[] = data?.map((app: any) => ({
+    ...app,
+    dateApplied: new Date(app.dateApplied),
+    datePosted: new Date(app.datePosted),
+    createdAt: new Date(app.createdAt),
+    updatedAt: new Date(app.updatedAt),
+  }));
 
   return (
     <div className="px-4 lg:px-6">
@@ -70,8 +55,13 @@ const ApplicationsTracker = () => {
         </CardHeader>
 
         <CardContent>
-          <DataTable data={data} columns={DataTableColumns} />
-          {loading && (
+          {mounted.current ? (
+            <DataTable
+              data={formatted}
+              columns={DataTableColumns}
+              loading={isLoading}
+            />
+          ) : (
             <p className="text-sm text-muted-foreground mt-2">Loading...</p>
           )}
         </CardContent>

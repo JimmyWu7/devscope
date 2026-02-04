@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-// import { prisma } from "@/lib/prisma"
 import { auth, prisma } from "@/lib/auth";
 import { headers } from "next/headers";
 
@@ -13,7 +12,6 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-
   // console.log("POST Job", body);
 
   const job = await prisma.jobApplication.create({

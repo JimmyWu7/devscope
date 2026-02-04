@@ -47,7 +47,7 @@ import {
   jobApplicationSchema,
 } from "./job-application-schema";
 import { LoadingSwap } from "@/components/ui/loading-swap";
-
+import { mutate } from "swr";
 
 function toDateInputValue(date?: Date) {
   if (!date) return "";
@@ -57,7 +57,7 @@ function toDateInputValue(date?: Date) {
 export function AddJobApplicationDialog() {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false); // Loading state
-  // Refs for salary inputs
+  // Refs for salary inputs error
   const salaryMinRef = useRef<HTMLInputElement | null>(null);
   const salaryMaxRef = useRef<HTMLInputElement | null>(null);
 
@@ -93,7 +93,7 @@ export function AddJobApplicationDialog() {
 
   async function onSubmit(data: JobApplicationFormValues) {
     try {
-      setIsSubmitting(true); // Set loading state to true
+      setIsSubmitting(true); 
       const normalized = {
         ...data,
         location: data.location?.trim() || null,
@@ -107,19 +107,20 @@ export function AddJobApplicationDialog() {
             : null,
       };
       // console.log("Submit Normalized", normalized)
-      // 🔜 replace with POST /api/job-applications
+
       const res = await fetch("/api/job-applications", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(normalized), // <-- send form data
+        body: JSON.stringify(normalized), 
       });
 
       const responseData = await res.json();
 
       if (res.ok) {
         toast.success("Job application added");
+        await mutate("/api/job-applications");
         form.reset();
         setOpen(false);
       } else {
@@ -128,7 +129,7 @@ export function AddJobApplicationDialog() {
     } catch {
       toast.error("Job application submission went wrong");
     } finally {
-      setIsSubmitting(false); // Reset loading state after submission
+      setIsSubmitting(false);
     }
   }
 

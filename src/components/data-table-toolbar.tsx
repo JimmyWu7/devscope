@@ -9,10 +9,6 @@ import { DataTableViewOptions } from "./data-table-view-options";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { statuses } from "@/constants/data";
 import { AddJobApplicationDialog } from "./layout/job-applications/add-job-application-dialog";
-// import { DataTableViewOptions } from "@/app/(app)/examples/tasks/components/data-table-view-options"
-
-// import { priorities, statuses } from "../data/data"
-// import { DataTableFacetedFilter } from "./data-table-faceted-filter"
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
