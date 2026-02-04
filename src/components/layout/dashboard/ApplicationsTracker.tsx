@@ -19,14 +19,14 @@ export interface JobApplication {
   company: string;
   role: string;
   status: "APPLIED" | "INTERVIEW" | "OFFER" | "REJECTED";
-  dateApplied: Date;
+  dateApplied: string;
   createdAt: Date;
   updatedAt: Date;
   location?: string | null;
   salaryMin?: number | null;
   salaryMax?: number | null;
   salaryCurrency?: string | null;
-  datePosted?: Date | null;
+  datePosted?: string | null;
   applicationUrl?: string | null;
   notes?: string | null;
 }
@@ -36,22 +36,25 @@ const ApplicationsTracker = () => {
   const mounted = useRef(true);
 
   if (error) {
-    toast.error("Failed to load job applications");
+    // console.log("Application Tracker Error", error);
+    toast.error("Loading too fast!");
   }
 
   const formatted: JobApplication[] = data?.map((app: any) => ({
     ...app,
-    dateApplied: new Date(app.dateApplied),
-    datePosted: new Date(app.datePosted),
+    dateApplied: app.dateApplied,
+    datePosted: app.datePosted,
     createdAt: new Date(app.createdAt),
     updatedAt: new Date(app.updatedAt),
   }));
+
+  // console.log("Formatted", formatted);
 
   return (
     <div className="px-4 lg:px-6">
       <Card>
         <CardHeader>
-          <CardTitle>Job Applications</CardTitle>
+          <CardTitle>Track Your Applications</CardTitle>
         </CardHeader>
 
         <CardContent>

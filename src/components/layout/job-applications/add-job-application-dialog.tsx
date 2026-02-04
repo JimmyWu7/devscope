@@ -49,9 +49,14 @@ import {
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { mutate } from "swr";
 
-function toDateInputValue(date?: Date) {
-  if (!date) return "";
-  return date.toISOString().split("T")[0];
+function toDateInputValue(value?: string | Date) {
+  if (!value) return "";
+
+  if (value instanceof Date) {
+    return value.toISOString().split("T")[0];
+  }
+  // already a YYYY-MM-DD string
+  return value;
 }
 
 export function AddJobApplicationDialog() {
@@ -64,19 +69,21 @@ export function AddJobApplicationDialog() {
   // console.log("Users Local Time", getLocalDateString());
   // console.log("Date", new Date())
 
+  const today = new Date().toISOString().split("T")[0];
+
   const form = useForm<JobApplicationFormValues>({
     resolver: zodResolver(jobApplicationSchema),
     defaultValues: {
       company: "",
       role: "",
       status: "APPLIED",
-      dateApplied: new Date(),
+      dateApplied: today,
       location: "",
       salaryMin: null,
       salaryMax: null,
       salaryCurrency: "USD",
       applicationUrl: "",
-      datePosted: new Date(),
+      datePosted: today,
       notes: "",
     },
   });
@@ -93,7 +100,7 @@ export function AddJobApplicationDialog() {
 
   async function onSubmit(data: JobApplicationFormValues) {
     try {
-      setIsSubmitting(true); 
+      setIsSubmitting(true);
       const normalized = {
         ...data,
         location: data.location?.trim() || null,
@@ -113,7 +120,7 @@ export function AddJobApplicationDialog() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(normalized), 
+        body: JSON.stringify(normalized),
       });
 
       const responseData = await res.json();
@@ -356,8 +363,9 @@ export function AddJobApplicationDialog() {
                         <FieldLabel>Date Applied</FieldLabel>
                         <Input
                           type="date"
-                          {...field}
+                          max={today}
                           value={toDateInputValue(field.value)}
+                          onChange={(e) => field.onChange(e.target.value)}
                         />
                         {fieldState.error && (
                           <FieldError errors={[fieldState.error]} />
@@ -374,8 +382,9 @@ export function AddJobApplicationDialog() {
                         <FieldLabel>Date Posted</FieldLabel>
                         <Input
                           type="date"
-                          {...field}
+                          max={today}
                           value={toDateInputValue(field.value)}
+                          onChange={(e) => field.onChange(e.target.value)}
                         />
                         {fieldState.error && (
                           <FieldError errors={[fieldState.error]} />

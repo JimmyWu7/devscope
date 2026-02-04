@@ -5,7 +5,7 @@ export const jobApplicationSchema = z
     company: z.string().min(1, "Company name is required"),
     role: z.string().min(1, "Role is required"),
     status: z.enum(["APPLIED", "INTERVIEW", "OFFER", "REJECTED"]),
-    dateApplied: z.date().min(1, "Date is required"),
+    dateApplied: z.string().min(1, "Date is required"),
     location: z.string().nullable().optional(),
     salaryMin: z
       .number()
@@ -25,7 +25,7 @@ export const jobApplicationSchema = z
       .nullable()
       .optional(),
     applicationUrl: z.string().url().nullable().optional().or(z.literal("")),
-    datePosted: z.date().min(1, "Date is required"),
+    datePosted: z.string().min(1, "Date is required"),
     notes: z.string().max(500).nullable().optional(),
   })
   .refine(

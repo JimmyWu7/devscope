@@ -22,6 +22,12 @@ function displayOrEmpty(value?: string | null) {
   return value;
 }
 
+function formatDate(date: string) {
+  const dateOnly = date.split("T")[0]; // "2026-02-04"
+  const [y, m, d] = dateOnly.split("-");
+  return `${m}/${d}/${y}`;
+}
+
 function formatSalary(
   min?: number | null,
   max?: number | null,
@@ -136,14 +142,12 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
       <DataTableColumnHeader column={column} title="Date Applied" />
     ),
     cell: ({ row }) => {
-      const date = row.getValue("dateApplied") as Date;
+      const date = row.getValue("dateApplied") as string;
 
       return (
         <div className="flex items-center gap-2">
           {/* {label && <Badge variant="outline">{label.label}</Badge>} */}
-          <span className="max-w-20 font-medium">
-            {date.toLocaleDateString()}
-          </span>
+          <span className="max-w-20 font-medium">{formatDate(date)}</span>
         </div>
       );
     },
@@ -200,12 +204,12 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
       <DataTableColumnHeader column={column} title="Date Posted" />
     ),
     cell: ({ row }) => {
-      const date = row.getValue("datePosted") as Date;
+      const date = row.getValue("datePosted") as string;
 
       return (
         <div className="flex gap-2">
           <span className="max-w-20 truncate font-medium">
-            {date.toLocaleDateString()}
+            {formatDate(date)}
           </span>
         </div>
       );
