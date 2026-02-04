@@ -135,6 +135,9 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
         </div>
       );
     },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
   },
   {
     accessorKey: "dateApplied",
