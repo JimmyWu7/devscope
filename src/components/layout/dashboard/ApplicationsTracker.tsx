@@ -1,115 +1,66 @@
 "use client";
 
-import * as React from "react";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import {
-  Column,
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  SortingState,
-  useReactTable,
-} from "@tanstack/react-table";
-import { DataTableColumnHeader } from "@/components/data-table-column-header";
-import { promises } from "fs";
-import path from "path";
+
 import { DataTable } from "@/components/data-table";
 import { DataTableColumns } from "@/components/data-table-columns";
-import { data } from "@/constants/table-data";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+// import { data } from "@/constants/table-data";
 
-type ApplicationStatus = "Applied" | "Interview" | "Offer" | "Rejected";
-
-type Application = {
+export interface JobApplication {
   id: string;
-  role: string;
   company: string;
-  applicationUrl?: string;
-  dateApplied: string;
-  datePosted?: string;
-  status: ApplicationStatus;
-};
-
-// const columns: ColumnDef<Application>[] = [
-//   {
-//     accessorKey: "role",
-//     header: ({ column }) => (
-//       <DataTableColumnHeader column={column} title="Role" />
-//     ),
-//   },
-//   {
-//     accessorKey: "company",
-//     header: ({ column }) => (
-//       <DataTableColumnHeader column={column} title="Company" />
-//     ),
-//   },
-//   {
-//     accessorKey: "status",
-//     header: ({ column }) => (
-//       <DataTableColumnHeader column={column} title="Status" />
-//     ),
-//     cell: ({ row }) => (
-//       <Badge variant={statusVariantMap[row.original.status]}>
-//         {row.original.status}
-//       </Badge>
-//     ),
-//   },
-//   {
-//     accessorKey: "dateApplied",
-//     header: ({ column }) => (
-//       <DataTableColumnHeader column={column} title="Date Applied" />
-//     ),
-//   },
-//   {
-//     accessorKey: "datePosted",
-//     header: ({ column }) => (
-//       <DataTableColumnHeader column={column} title="Date Posted" />
-//     ),
-//     cell: ({ row }) => row.original.datePosted ?? "—",
-//   },
-//   {
-//     accessorKey: "applicationUrl",
-//     header: ({ column }) => (
-//       <DataTableColumnHeader column={column} title="Link" />
-//     ),
-//     cell: ({ row }) =>
-//       row.original.applicationUrl ? (
-//         <a
-//           href={row.original.applicationUrl}
-//           target="_blank"
-//           rel="noopener noreferrer"
-//           className="text-sm text-primary underline-offset-4 hover:underline"
-//         >
-//           View
-//         </a>
-//       ) : (
-//         "—"
-//       ),
-//     meta: { align: "right" },
-//   },
-// ];
-
-// const statusVariantMap: Record<
-//   ApplicationStatus,
-//   "default" | "secondary" | "destructive" | "outline"
-// > = {
-//   Applied: "secondary",
-//   Interview: "default",
-//   Offer: "outline",
-//   Rejected: "destructive",
-// };
+  role: string;
+  status: "APPLIED" | "INTERVIEW" | "OFFER" | "REJECTED";
+  dateApplied: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  location?: string | null;
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+  salaryCurrency?: string | null;
+  datePosted?: Date | null;
+  applicationUrl?: string | null;
+  notes?: string | null;
+}
 
 const ApplicationsTracker = () => {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [data, setData] = useState<JobApplication[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        const res = await fetch("/api/job-applications");
+        if (!res.ok) throw new Error("Failed to fetch job applications");
+
+        const applications: any[] = await res.json(); // API returns JSON
+        // console.log("applications", applications);
+
+        // Convert date strings to Date objects
+        const formatted: JobApplication[] = applications.map((app) => ({
+          ...app,
+          dateApplied: new Date(app.dateApplied),
+          datePosted: new Date(app.datePosted),
+          createdAt: new Date(app.createdAt),
+          updatedAt: new Date(app.updatedAt),
+        }));
+        // console.log("Formatted", formatted);
+
+
+        setData(formatted);
+      } catch (err) {
+        // console.log("Application Tracker");
+        // console.error(err);
+        toast.error("Failed to load job applications");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApplications();
+  }, []);
 
   return (
     <div className="px-4 lg:px-6">
@@ -120,6 +71,9 @@ const ApplicationsTracker = () => {
 
         <CardContent>
           <DataTable data={data} columns={DataTableColumns} />
+          {loading && (
+            <p className="text-sm text-muted-foreground mt-2">Loading...</p>
+          )}
         </CardContent>
       </Card>
     </div>

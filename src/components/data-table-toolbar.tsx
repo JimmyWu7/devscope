@@ -5,6 +5,10 @@ import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DataTableViewOptions } from "./data-table-view-options";
+import { DataTableFacetedFilter } from "./data-table-faceted-filter";
+import { statuses } from "@/constants/data";
+import { AddJobApplicationDialog } from "./layout/job-applications/add-job-application-dialog";
 // import { DataTableViewOptions } from "@/app/(app)/examples/tasks/components/data-table-view-options"
 
 // import { priorities, statuses } from "../data/data"
@@ -30,20 +34,13 @@ export function DataTableToolbar<TData>({
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
-        {/* {table.getColumn("status") && (
+        {table.getColumn("status") && (
           <DataTableFacetedFilter
             column={table.getColumn("status")}
             title="Status"
             options={statuses}
           />
         )}
-        {table.getColumn("priority") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("priority")}
-            title="Priority"
-            options={priorities}
-          />
-        )} */}
         {isFiltered && (
           <Button
             variant="ghost"
@@ -56,8 +53,8 @@ export function DataTableToolbar<TData>({
         )}
       </div>
       <div className="flex items-center gap-2">
-        {/* <DataTableViewOptions table={table} /> */}
-        <Button size="sm">Add Task</Button>
+        <DataTableViewOptions table={table} />
+        <AddJobApplicationDialog />
       </div>
     </div>
   );

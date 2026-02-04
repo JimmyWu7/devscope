@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "JobApplicationStatus" AS ENUM ('APPLIED', 'INTERVIEW', 'OFFER', 'REJECTED');
+
 -- CreateTable
 CREATE TABLE "user" (
     "id" TEXT NOT NULL,
@@ -100,6 +103,27 @@ CREATE TABLE "GithubSync" (
     CONSTRAINT "GithubSync_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "job_application" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "company" TEXT NOT NULL,
+    "role" TEXT NOT NULL,
+    "applicationUrl" TEXT,
+    "salaryMin" INTEGER,
+    "salaryMax" INTEGER,
+    "salaryCurrency" TEXT DEFAULT 'USD',
+    "location" TEXT,
+    "status" "JobApplicationStatus" NOT NULL,
+    "dateApplied" TIMESTAMP(3) NOT NULL,
+    "datePosted" TIMESTAMP(3),
+    "notes" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "job_application_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
@@ -124,6 +148,15 @@ CREATE INDEX "GithubRepo_userId_idx" ON "GithubRepo"("userId");
 -- CreateIndex
 CREATE UNIQUE INDEX "GithubSync_userId_key" ON "GithubSync"("userId");
 
+-- CreateIndex
+CREATE INDEX "job_application_userId_idx" ON "job_application"("userId");
+
+-- CreateIndex
+CREATE INDEX "job_application_status_idx" ON "job_application"("status");
+
+-- CreateIndex
+CREATE INDEX "job_application_dateApplied_idx" ON "job_application"("dateApplied");
+
 -- AddForeignKey
 ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -138,3 +171,6 @@ ALTER TABLE "GithubRepo" ADD CONSTRAINT "GithubRepo_userId_fkey" FOREIGN KEY ("u
 
 -- AddForeignKey
 ALTER TABLE "GithubSync" ADD CONSTRAINT "GithubSync_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "job_application" ADD CONSTRAINT "job_application_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;

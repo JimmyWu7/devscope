@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -25,6 +24,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DataTableToolbar } from "./data-table-toolbar";
+import { DataTablePagination } from "./data-table-pagination";
+import { useState } from "react";
 
 // import { DataTablePagination } from "./data-table-pagination";
 // import { DataTableToolbar } from "./data-table-toolbar";
@@ -38,13 +39,15 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [rowSelection, setRowSelection] = React.useState({});
+  const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     []
   );
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "dateApplied", desc: true },
+  ]);
 
   const table = useReactTable({
     data,
@@ -126,7 +129,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      {/* <DataTablePagination table={table} /> */}
+      <DataTablePagination table={table} />
     </div>
   );
 }

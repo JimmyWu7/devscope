@@ -138,8 +138,8 @@ model JobApplication {
   company        String
   role           String
   applicationUrl String?
-  salaryMin      Int
-  salaryMax      Int
+  salaryMin      Int?
+  salaryMax      Int?
   salaryCurrency String?  @default("USD")
   location       String?
   status         JobApplicationStatus

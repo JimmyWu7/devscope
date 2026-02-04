@@ -1,18 +1,35 @@
 "use client";
 
 import { type ColumnDef } from "@tanstack/react-table";
-
-import { Badge } from "@/components/ui/badge";
-// import { Checkbox } from "@/components/ui/checkbox";
-
-import { labels, priorities, statuses } from "@/constants/data";
-import { type Task } from "@/constants/schema";
+import { statuses } from "@/constants/data";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import Link from "next/link";
+import { ExternalLinkIcon } from "lucide-react";
+import { Checkbox } from "./ui/checkbox";
+import { JobApplication } from "./layout/dashboard/ApplicationsTracker";
 
-function formatSalary(min?: number, max?: number, currency = "USD") {
-  if (!min && !max) return "—";
+const EMPTY = "-----";
+
+function renderEmpty() {
+  return <span className="text-muted-foreground">{EMPTY}</span>;
+}
+
+function displayOrEmpty(value?: string | null) {
+  if (value == null || value.trim() === "") {
+    return renderEmpty();
+  }
+  return value;
+}
+
+function formatSalary(
+  min?: number | null,
+  max?: number | null,
+  currency = "USD"
+) {
+  if (min == null && max == null) {
+    return <span className="text-muted-foreground">-----</span>;
+  }
 
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -21,26 +38,46 @@ function formatSalary(min?: number, max?: number, currency = "USD") {
   });
 
   const formatK = (n: number) => {
-    const formatted = formatter.format(n / 1000); // divide by 1000
-    return formatted.replace(/\d+(\.\d+)?/, (match) => `${match}K`); // append "K"
+    const formatted = formatter.format(n / 1000);
+    return formatted.replace(/\d+(\.\d+)?/, (match) => `${match}K`);
   };
 
-  if (min && max) return `${formatK(min)} – ${formatK(max)}`;
-  return formatK(min ?? max!);
+  if (min != null && max != null) return `${formatK(min)} - ${formatK(max)}`;
+  return formatK((min ?? max)!);
 }
 
-export const DataTableColumns: ColumnDef<Task>[] = [
-  // {
-  //   accessorKey: "company",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="Company" />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="max-w-40 truncate">{row.getValue("company")}</div>
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
+const statusIconColors: Record<string, string> = {
+  Applied: "text-blue-500",
+  Interview: "text-yellow-500",
+  Offer: "text-green-500",
+  Rejected: "text-red-500",
+};
+
+export const DataTableColumns: ColumnDef<JobApplication>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+        className="translate-y-[2px] cursor-pointer"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+        className="translate-y-[2px] cursor-pointer"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "company",
     header: ({ column }) => (
@@ -74,18 +111,55 @@ export const DataTableColumns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: "location",
+    accessorKey: "status",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date Location" />
+      <DataTableColumnHeader column={column} title="Status" />
     ),
     cell: ({ row }) => {
+      const status = statuses.find(
+        (status) => status.value === row.getValue("status")
+      );
+      if (!status) return null;
+      const iconColor =
+        statusIconColors[status.label] ?? "text-muted-foreground";
       return (
-        <div className="flex gap-2">
+        <div className="flex w-25 items-center gap-2">
+          {status.icon && <status.icon className={`size-4 ${iconColor}`} />}
+          <span>{status.label}</span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "dateApplied",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Date Applied" />
+    ),
+    cell: ({ row }) => {
+      const date = row.getValue("dateApplied") as Date;
+
+      return (
+        <div className="flex items-center gap-2">
           {/* {label && <Badge variant="outline">{label.label}</Badge>} */}
-          <span className="max-w-30 truncate font-medium">
-            {row.getValue("location")}
+          <span className="max-w-20 font-medium">
+            {date.toLocaleDateString()}
           </span>
         </div>
+      );
+    },
+  },
+  {
+    accessorKey: "location",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Location" />
+    ),
+    cell: ({ row }) => {
+      const location = row.getValue("location") as string | null | undefined;
+
+      return (
+        <span className="max-w-40 truncate font-medium">
+          {displayOrEmpty(location)}
+        </span>
       );
     },
   },
@@ -107,7 +181,11 @@ export const DataTableColumns: ColumnDef<Task>[] = [
       };
 
       return (
-        <span className="font-medium">{formatSalary(min, max, currency)}</span>
+        <div className="flex gap-2">
+          <span className="font-medium max-w-40">
+            {formatSalary(min, max, currency)}
+          </span>
+        </div>
       );
     },
     sortingFn: (a, b) => {
@@ -115,57 +193,6 @@ export const DataTableColumns: ColumnDef<Task>[] = [
       const bMin = b.original.salaryMin ?? 0;
       return aMin - bMin;
     },
-  },
-
-  {
-    accessorKey: "applicationUrl",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="URL" />
-    ),
-    cell: ({ row }) => {
-      // const label = labels.find((label) => label.value === row.original.applicationUrl);
-
-      return (
-        <div className="flex gap-2">
-          {/* {label && <Badge variant="outline">{label.label}</Badge>} */}
-          <Link
-            href={row.getValue("applicationUrl")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="max-w-30 truncate font-medium hover:text-blue-400"
-          >
-            Link
-          </Link>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
-    ),
-    cell: ({ row }) => {
-      const status = statuses.find(
-        (status) => status.value === row.getValue("status")
-      );
-
-      if (!status) {
-        return null;
-      }
-
-      return (
-        <div className="flex w-25 items-center gap-2">
-          {status.icon && (
-            <status.icon className="text-muted-foreground size-4" />
-          )}
-          <span>{status.label}</span>
-        </div>
-      );
-    },
-    // filterFn: (row, id, value) => {
-    //   return value.includes(row.getValue(id));
-    // },
   },
   {
     accessorKey: "datePosted",
@@ -177,8 +204,7 @@ export const DataTableColumns: ColumnDef<Task>[] = [
 
       return (
         <div className="flex gap-2">
-          {/* {label && <Badge variant="outline">{label.label}</Badge>} */}
-          <span className="max-w-30 truncate font-medium">
+          <span className="max-w-20 truncate font-medium">
             {date.toLocaleDateString()}
           </span>
         </div>
@@ -186,20 +212,26 @@ export const DataTableColumns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: "dateApplied",
+    accessorKey: "applicationUrl",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date Applied" />
+      <DataTableColumnHeader column={column} title="URL" />
     ),
     cell: ({ row }) => {
-      const date = row.getValue("dateApplied") as Date;
+      const url = row.getValue("applicationUrl") as string | null;
+
+      if (!url || url.trim() === "") {
+        return <span className="text-muted-foreground">{EMPTY}</span>;
+      }
 
       return (
-        <div className="flex gap-2">
-          {/* {label && <Badge variant="outline">{label.label}</Badge>} */}
-          <span className="max-w-30 truncate font-medium">
-            {date.toLocaleDateString()}
-          </span>
-        </div>
+        <Link
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1 text-blue-400"
+        >
+          View <ExternalLinkIcon className="size-3" />
+        </Link>
       );
     },
   },
@@ -209,43 +241,15 @@ export const DataTableColumns: ColumnDef<Task>[] = [
       <DataTableColumnHeader column={column} title="Notes" />
     ),
     cell: ({ row }) => {
+      const notes = row.getValue("notes") as string | null | undefined;
+
       return (
-        <div className="flex gap-2">
-          {/* {label && <Badge variant="outline">{label.label}</Badge>} */}
-          <span className="max-w-30 truncate font-medium">
-            {row.getValue("notes")}
-          </span>
-        </div>
+        <span className="max-w-35 truncate font-medium">
+          {displayOrEmpty(notes)}
+        </span>
       );
     },
   },
-  // {
-  //   accessorKey: "notes",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="Notes" />
-  //   ),
-  //   cell: ({ row }) => {
-  //     const priority = priorities.find(
-  //       (priority) => priority.value === row.getValue("notes")
-  //     );
-
-  //     if (!priority) {
-  //       return null;
-  //     }
-
-  //     return (
-  //       <div className="flex items-center gap-2">
-  //         {priority.icon && (
-  //           <priority.icon className="text-muted-foreground size-4" />
-  //         )}
-  //         <span>{priority.label}</span>
-  //       </div>
-  //     );
-  //   },
-  // filterFn: (row, id, value) => {
-  //   return value.includes(row.getValue(id));
-  // },
-  // },
   {
     id: "actions",
     cell: ({ row }) => <DataTableRowActions row={row} />,
