@@ -54,7 +54,18 @@ const page = async () => {
           } as React.CSSProperties
         }
       >
-        <AppSidebar variant="inset" />
+        <AppSidebar
+          variant="inset"
+          githubProfile={
+            githubProfile
+              ? {
+                  profileUrl: githubProfile.profileUrl,
+                  username: githubProfile.username,
+                  avatarUrl: githubProfile.avatarUrl,
+                }
+              : null
+          }
+        />
         <SidebarInset>
           <SiteHeader
             title="Job Applications"

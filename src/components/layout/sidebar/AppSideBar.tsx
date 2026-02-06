@@ -19,10 +19,6 @@ import {
   IconUsers,
 } from "@tabler/icons-react";
 
-// import { NavDocuments } from "@/components/nav-documents";
-// import { NavMain } from "@/components/nav-main";
-// import { NavSecondary } from "@/components/nav-secondary";
-// import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -55,16 +51,16 @@ const data = {
       url: "/job-applications",
       icon: IconListDetails,
     },
-    {
-      title: "Resumes",
-      url: "/resumes",
-      icon: IconFileWord,
-    },
-    {
-      title: "Projects",
-      url: "/projects",
-      icon: IconFolder,
-    },
+    // {
+    //   title: "Resumes",
+    //   url: "/resumes",
+    //   icon: IconFileWord,
+    // },
+    // {
+    //   title: "Projects",
+    //   url: "/projects",
+    //   icon: IconFolder,
+    // },
     // {
     //   title: "Team",
     //   url: "#",
@@ -155,7 +151,16 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+  githubProfile,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & {
+  githubProfile?: {
+    username: string;
+    avatarUrl: string;
+    profileUrl: string;
+  } | null;
+}) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -175,11 +180,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {/* <NavDocuments items={data.documents} /> */}
+        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={githubProfile || { username: "", avatarUrl: "" }} />
       </SidebarFooter>
     </Sidebar>
   );

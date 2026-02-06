@@ -23,7 +23,7 @@ function displayOrEmpty(value?: string | null) {
 }
 
 function formatDate(date: string) {
-  const dateOnly = date.split("T")[0]; // "2026-02-04"
+  const dateOnly = date.split("T")[0];
   const [y, m, d] = dateOnly.split("-");
   return `${m}/${d}/${y}`;
 }
@@ -92,7 +92,6 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-2">
-          {/* {label && <Badge variant="outline">{label.label}</Badge>} */}
           <span className="max-w-40 truncate font-medium">
             {row.getValue("company")}
           </span>
@@ -108,7 +107,6 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-2">
-          {/* {label && <Badge variant="outline">{label.label}</Badge>} */}
           <span className="max-w-40 truncate font-medium">
             {row.getValue("role")}
           </span>
@@ -164,9 +162,11 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
       const location = row.getValue("location") as string | null | undefined;
 
       return (
-        <span className="max-w-40 truncate font-medium">
-          {displayOrEmpty(location)}
-        </span>
+        <div className="flex gap-2">
+          <span className="max-w-35 truncate font-medium">
+            {displayOrEmpty(location)}
+          </span>
+        </div>
       );
     },
   },
@@ -211,7 +211,7 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
 
       return (
         <div className="flex gap-2">
-          <span className="max-w-20 truncate font-medium">
+          <span className="max-w-20 font-medium">
             {formatDate(date)}
           </span>
         </div>
@@ -251,9 +251,11 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
       const notes = row.getValue("notes") as string | null | undefined;
 
       return (
-        <span className="max-w-35 truncate font-medium">
-          {displayOrEmpty(notes)}
-        </span>
+        <div className="flex gap-2">
+          <span className="max-w-30 truncate font-medium">
+            {displayOrEmpty(notes)}
+          </span>
+        </div>
       );
     },
   },
