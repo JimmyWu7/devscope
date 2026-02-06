@@ -6,7 +6,7 @@ import { User2Icon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
-const Navbar = () => {
+export default function Navbar() {
   const { data: session } = authClient.useSession();
   const router = useRouter();
 
@@ -55,6 +55,4 @@ const Navbar = () => {
       </nav>
     </div>
   );
-};
-
-export default Navbar;
+}
