@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button"; // Shadcn Button
 import Link from "next/link";
+import LogoTicker from "./logo-ticker";
 
 export default function Hero() {
   return (
@@ -23,24 +24,23 @@ export default function Hero() {
         </p>
 
         {/* CTA Buttons */}
-        {/* <div className="flex flex-col justify-center"> */}
         <Link href="/auth/login">
           <Button size="lg" className="text-md cursor-pointer">
             Get started for free
           </Button>
         </Link>
-        {/* </div> */}
 
         {/* Illustration */}
         <div className="w-full max-w-5xl flex justify-center">
           <Image
-            src="/dashboard-ui-sample.png" // Replace with your illustration
+            src="/dashboard-ui-sample.png"
             alt="Dashboard Illustration"
             width={1200}
             height={600}
             className="rounded-lg shadow-lg"
           />
         </div>
+        <LogoTicker />
       </div>
     </section>
   );
