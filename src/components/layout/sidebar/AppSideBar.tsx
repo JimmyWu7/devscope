@@ -51,11 +51,11 @@ const data = {
       url: "/job-applications",
       icon: IconListDetails,
     },
-    // {
-    //   title: "Resumes",
-    //   url: "/resumes",
-    //   icon: IconFileWord,
-    // },
+    {
+      title: "Resumes",
+      url: "/resumes",
+      icon: IconFileWord,
+    },
     // {
     //   title: "Projects",
     //   url: "/projects",

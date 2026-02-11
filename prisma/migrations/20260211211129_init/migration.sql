@@ -124,6 +124,19 @@ CREATE TABLE "job_application" (
     CONSTRAINT "job_application_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Resume" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "fileName" TEXT NOT NULL,
+    "fileKey" TEXT NOT NULL,
+    "fileSize" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Resume_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
@@ -157,6 +170,9 @@ CREATE INDEX "job_application_status_idx" ON "job_application"("status");
 -- CreateIndex
 CREATE INDEX "job_application_dateApplied_idx" ON "job_application"("dateApplied");
 
+-- CreateIndex
+CREATE INDEX "Resume_userId_idx" ON "Resume"("userId");
+
 -- AddForeignKey
 ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -174,3 +190,6 @@ ALTER TABLE "GithubSync" ADD CONSTRAINT "GithubSync_userId_fkey" FOREIGN KEY ("u
 
 -- AddForeignKey
 ALTER TABLE "job_application" ADD CONSTRAINT "job_application_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Resume" ADD CONSTRAINT "Resume_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
