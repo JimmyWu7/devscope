@@ -49,7 +49,7 @@ export default function Navbar() {
               </a>
             </li>
             <li>
-              <a href="#FAW" className="text-md font-medium">
+              <a href="#faq" className="text-md font-medium">
                 FAQ
               </a>
             </li>
@@ -62,9 +62,7 @@ export default function Navbar() {
         </div>
         <div className="hidden md:flex items-center gap-4">
           <Link href="/auth/login">
-            <Button className="cursor-pointer">
-              Get started
-            </Button>
+            <Button className="cursor-pointer">Get started</Button>
           </Link>
           <ModeToggle />
         </div>

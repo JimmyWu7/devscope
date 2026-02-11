@@ -1,3 +1,4 @@
+import { Faq } from "@/components/landing-page/faq";
 import Feature from "@/components/landing-page/feature";
 import Footer from "@/components/landing-page/footer";
 import Hero from "@/components/landing-page/hero";
@@ -18,6 +19,9 @@ const Home = async () => {
         </section>
         <section>
           <Feature />
+        </section>
+        <section>
+          <Faq />
         </section>
       </main>
       <Footer />

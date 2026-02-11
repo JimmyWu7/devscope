@@ -109,8 +109,8 @@ export function FeatureCard({ feature, isActive }: FeatureCardProps) {
         style={{ maskImage }}
         initial={false}
         animate={{ opacity: isActive ? 1 : 0 }}
-        transition={{ duration: 0.5, ease: "easeInOut" }}
-        className="absolute inset-0 -m-px border border-white rounded-xl"
+        transition={{ duration: 1.0, ease: "easeInOut" }}
+        className="absolute inset-0 -m-px border border-black dark:border-white rounded-xl"
       />
 
       <Card className="hover:shadow-lg transition-shadow w-full h-full">
