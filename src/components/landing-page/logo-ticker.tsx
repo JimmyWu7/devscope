@@ -59,9 +59,9 @@ export default function LogoTicker() {
   if (!mounted) return null;
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 w-3/4">
+    <div className="flex flex-col items-center justify-center gap-4 w-full max-w-6xl px-4">
       {/* label */}
-      <p className="text-sm md:text-lg text-muted-foreground/80 tracking-wide">
+      <p className="text-sm md:text-lg text-muted-foreground/80 tracking-wide text-center">
         Built with modern developer tools
       </p>
       <div className="container">
@@ -80,16 +80,17 @@ export default function LogoTicker() {
               {[...logos, ...logos].map((logo, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-2 mx-8 opacity-70 hover:opacity-100 transition shrink-0"
+                  className="flex items-center gap-2 mx-4 lg:mx-8 opacity-70 hover:opacity-100 transition shrink-0"
                 >
                   <Image
                     src={resolvedTheme === "dark" ? logo.dark : logo.light}
                     alt={logo.name}
-                    width={50}
-                    height={50}
                     priority={i < logos.length}
+                    width={30}
+                    height={30}
+                    className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14"
                   />
-                  <span className="text-lg font-medium text-muted-foreground">
+                  <span className="text-sm md:text-lg font-medium text-muted-foreground">
                     {logo.name}
                   </span>
                 </div>
