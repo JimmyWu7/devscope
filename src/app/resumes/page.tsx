@@ -1,4 +1,5 @@
 import ApplicationsTracker from "@/components/layout/dashboard/ApplicationsTracker";
+import ResumeList from "@/components/layout/resumes/ResumeList";
 import ResumeUploader from "@/components/layout/resumes/ResumeUploader";
 import { AppSidebar } from "@/components/layout/sidebar/AppSideBar";
 import { SiteHeader } from "@/components/layout/SiteHeader";
@@ -7,6 +8,7 @@ import { auth, prisma } from "@/lib/auth";
 import { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "DevScope | Resumes",
@@ -62,6 +64,9 @@ const page = async () => {
             <div className="@container/main flex flex-1 flex-col gap-2">
               <div className="flex flex-col gap-4 py-4 px-4 md:gap-6 md:py-6">
                 <ResumeUploader />
+                <Suspense fallback={<div>Loading resumes...</div>}>
+                  <ResumeList userId={session.user.id} />
+                </Suspense>
               </div>
             </div>
           </div>

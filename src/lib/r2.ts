@@ -10,11 +10,11 @@ export const r2 = new S3Client({
   },
 });
 
-export async function getSignedDownloadUrl(key: string) {
-  const command = new GetObjectCommand({
-    Bucket: process.env.R2_BUCKET_NAME!,
-    Key: key,
-  });
+// export async function getSignedDownloadUrl(key: string) {
+//   const command = new GetObjectCommand({
+//     Bucket: process.env.R2_BUCKET_NAME!,
+//     Key: key,
+//   });
 
-  return await getSignedUrl(r2, command, { expiresIn: 60 * 5 });
-}
+//   return await getSignedUrl(r2, command, { expiresIn: 60 * 5 });
+// }

@@ -5,11 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Upload, FileText, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function ResumeUploader() {
   const [uploading, setUploading] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const router = useRouter();
 
   async function handleFile(file: File) {
     if (file.type !== "application/pdf") {
@@ -23,14 +26,24 @@ export default function ResumeUploader() {
     const formData = new FormData();
     formData.append("file", file);
 
-    await fetch("/api/resumes/upload", {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const res = await fetch("/api/resumes/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-    setUploading(false);
-    toast.success("Resume uploaded!");
-    window.location.reload();
+      const data = await res.json();
+
+      if (res.ok) {
+        setUploading(false);
+        toast.success("Resume uploaded successfully!");
+        router.refresh();
+      } else {
+        toast.error(data.error ?? "Failed to upload resume");
+      }
+    } catch {
+      toast.error("Unexpected error while uploading resume");
+    }
   }
 
   return (
