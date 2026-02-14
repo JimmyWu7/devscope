@@ -10,6 +10,7 @@ export const r2 = new S3Client({
   },
 });
 
+// Uses the default R2 CloudFlare url for viewing resumes
 // export async function getSignedDownloadUrl(key: string) {
 //   const command = new GetObjectCommand({
 //     Bucket: process.env.R2_BUCKET_NAME!,

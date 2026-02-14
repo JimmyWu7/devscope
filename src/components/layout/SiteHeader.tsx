@@ -4,9 +4,10 @@ import { SidebarTrigger } from "../ui/sidebar";
 // import { ThemeSelector } from "./ui/theme-selector";
 import { ModeToggle } from "../ui/mode-toggle";
 import Link from "next/link";
+import ResumeUploader from "./resumes/ResumeUploader";
 
 type SiteHeaderProps = {
-  title: string,
+  title: string;
   githubProfile?: {
     profileUrl: string;
     username: string;
@@ -15,7 +16,11 @@ type SiteHeaderProps = {
   latestSync?: Date | null;
 };
 
-export function SiteHeader({ title, githubProfile, latestSync }: SiteHeaderProps) {
+export function SiteHeader({
+  title,
+  githubProfile,
+  latestSync,
+}: SiteHeaderProps) {
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
       <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
@@ -26,6 +31,7 @@ export function SiteHeader({ title, githubProfile, latestSync }: SiteHeaderProps
         />
         <h1 className="text-base font-medium">{title}</h1>
         <div className="ml-auto flex items-center gap-2">
+          {title === "Resumes" && <ResumeUploader />}
           {latestSync && (
             <p className="text-sm text-muted-foreground">
               Last synced: {latestSync.toLocaleString()}

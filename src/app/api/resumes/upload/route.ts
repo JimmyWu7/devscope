@@ -16,6 +16,7 @@ export async function POST(req: Request) {
 
   const formData = await req.formData();
   const file = formData.get("file") as File;
+  const customName = formData.get("customName") as string | null;
 
   if (!file) {
     return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
@@ -38,10 +39,22 @@ export async function POST(req: Request) {
     }),
   );
 
+  function sanitize(name: string) {
+    return name
+      .replace(/[^\w\s-]/g, "")
+      .slice(0, 50)
+      .trim();
+  }
+
+  const safeName =
+    customName && typeof customName === "string"
+      ? sanitize(customName)
+      : sanitize(file.name.replace(".pdf", ""));
+
   const resume = await prisma.resume.create({
     data: {
       userId: session.user.id,
-      fileName: file.name,
+      fileName: safeName || "Untitled Resume",
       fileKey,
       fileSize: file.size,
     },
