@@ -116,16 +116,9 @@ export function CommitsCard() {
           </div>
         ) : (
           <div className="px-6 pb-4">
-            {/* Month labels */}
-            <div className="mb-2 ml-8 grid grid-cols-53 gap-1 text-xs text-muted-foreground">
-              {monthLabels.map((month, i) => (
-                <div key={i}>{month}</div>
-              ))}
-            </div>
-
             <div className="flex gap-2">
-              {/* Weekday labels */}
-              <div className="flex flex-col justify-between text-xs text-center text-muted-foreground">
+              {/* Weekday labels (fixed, not scrollable) */}
+              <div className="flex flex-col justify-between text-xs text-center text-muted-foreground pt-5 lg:pt-6">
                 {WEEKDAY_LABELS.map((day, i) => (
                   <div key={i} className="h-4">
                     {day.label ?? ""}
@@ -133,20 +126,32 @@ export function CommitsCard() {
                 ))}
               </div>
 
-              {/* Heatmap */}
-              <div className="grid grid-cols-53 gap-1 w-full">
-                {calendar.weeks.map((week, i) => (
-                  <div key={i} className="flex flex-col gap-1">
-                    {week.contributionDays.map((day) => (
-                      <div
-                        key={day.date}
-                        title={`${day.contributionCount} contributions on ${day.date}`}
-                        className="h-3 w-3 xl:h-3.5 xl:w-3.5 rounded-xs"
-                        style={{ backgroundColor: day.color }}
-                      />
+              {/* Scrollable area */}
+              <div className="overflow-x-auto lg:overflow-visible">
+                <div className="min-w-max lg:min-w-0">
+                  {/* Month labels */}
+                  <div className="mb-2 grid grid-cols-53 gap-1 text-xs text-muted-foreground">
+                    {monthLabels.map((month, i) => (
+                      <div key={i}>{month}</div>
                     ))}
                   </div>
-                ))}
+
+                  {/* Heatmap */}
+                  <div className="grid grid-cols-53">
+                    {calendar.weeks.map((week, i) => (
+                      <div key={i} className="flex flex-col gap-y-1">
+                        {week.contributionDays.map((day) => (
+                          <div
+                            key={day.date}
+                            title={`${day.contributionCount} contributions on ${day.date}`}
+                            className="h-3.5 w-3.5 rounded-xs"
+                            style={{ backgroundColor: day.color }}
+                          />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

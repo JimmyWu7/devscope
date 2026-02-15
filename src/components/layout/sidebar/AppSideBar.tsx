@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
   IconCamera,
   IconChartBar,
@@ -33,6 +32,9 @@ import { NavUser } from "./NavUser";
 import { NavSecondary } from "./NavSecondary";
 import { NavDocuments } from "./NavDocuments";
 import { NavMain } from "./NavMain";
+import Image from "next/image";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 const data = {
   user: {
@@ -161,6 +163,19 @@ export function AppSidebar({
     profileUrl: string;
   } | null;
 }) {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null; // or a skeleton placeholder
+  }
+
+  const isDark = resolvedTheme === "dark";
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -171,7 +186,17 @@ export function AppSidebar({
               className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
               <Link href="/dashboard" className="text-base font-semibold">
-                <IconInnerShadowTop className="size-5!" />
+                <Image
+                  src={
+                    isDark
+                      ? "/devscope-crosshair-white.png"
+                      : "/devscope-crosshair.png"
+                  }
+                  alt="DevScope logo"
+                  width={20}
+                  height={20}
+                  priority
+                />
                 DevScope
               </Link>
             </SidebarMenuButton>

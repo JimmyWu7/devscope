@@ -19,8 +19,7 @@ export default function Hero() {
         {/* Subheadline */}
         <p className="max-w-80 sm:max-w-xl md:max-w-2xl lg:max-w-3xl text-muted-foreground text-[clamp(0.95rem,2.5vw,1.125rem)]">
           Track your activity, manage job applications, and update your resume
-          effortlessly—so you can focus on growing your skills and advancing
-          your developer career.
+          effortlessly.
         </p>
 
         {/* CTA Buttons */}
@@ -34,7 +33,7 @@ export default function Hero() {
         </Link>
 
         {/* Illustration */}
-        <div className="flex items-center justify-center w-full max-w-5xl px-4 sm:px-6 lg:px-0">
+        <div className="flex items-center justify-center w-full max-w-5xl px-0 sm:px-6 lg:px-0">
           <Image
             src="/dashboard-ui-sample.png"
             alt="Dashboard Illustration"
