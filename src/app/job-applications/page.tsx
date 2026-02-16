@@ -1,4 +1,4 @@
-import ApplicationsTracker from "@/components/layout/dashboard/ApplicationsTracker";
+import ApplicationsTracker from "@/components/layout/job-applications/ApplicationsTracker";
 import { AppSidebar } from "@/components/layout/sidebar/AppSideBar";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";

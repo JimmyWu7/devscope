@@ -34,9 +34,11 @@ export async function syncGitHubData({
 
   const reposRes = await fetch(
     "https://api.github.com/user/repos?per_page=100&type=public",
-    { headers }
+    { headers },
   );
   const repos = await reposRes.json();
+
+  // console.log("Synced Repos: ", repos);
 
   await prisma.githubRepo.deleteMany({ where: { userId } });
 

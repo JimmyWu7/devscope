@@ -7,7 +7,7 @@ import { DataTableRowActions } from "./data-table-row-actions";
 import Link from "next/link";
 import { ExternalLinkIcon } from "lucide-react";
 import { Checkbox } from "./ui/checkbox";
-import { JobApplication } from "./layout/dashboard/ApplicationsTracker";
+import { JobApplication } from "./layout/job-applications/ApplicationsTracker";
 
 const EMPTY = "-----";
 
@@ -31,7 +31,7 @@ function formatDate(date: string) {
 function formatSalary(
   min?: number | null,
   max?: number | null,
-  currency = "USD"
+  currency = "USD",
 ) {
   if (min == null && max == null) {
     return <span className="text-muted-foreground">-----</span>;
@@ -121,7 +121,7 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
     ),
     cell: ({ row }) => {
       const status = statuses.find(
-        (status) => status.value === row.getValue("status")
+        (status) => status.value === row.getValue("status"),
       );
       if (!status) return null;
       const iconColor =
@@ -211,9 +211,7 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
 
       return (
         <div className="flex gap-2">
-          <span className="max-w-20 font-medium">
-            {formatDate(date)}
-          </span>
+          <span className="max-w-20 font-medium">{formatDate(date)}</span>
         </div>
       );
     },

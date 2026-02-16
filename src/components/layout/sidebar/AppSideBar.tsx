@@ -58,11 +58,11 @@ const data = {
       url: "/resumes",
       icon: IconFileWord,
     },
-    // {
-    //   title: "Projects",
-    //   url: "/projects",
-    //   icon: IconFolder,
-    // },
+    {
+      title: "Projects",
+      url: "/projects",
+      icon: IconFolder,
+    },
     // {
     //   title: "Team",
     //   url: "#",

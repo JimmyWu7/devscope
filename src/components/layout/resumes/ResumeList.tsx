@@ -36,7 +36,7 @@ export default async function ResumeList({ userId, page }: ResumeListProps) {
   if (resumes.length === 0) {
     return (
       <Card>
-        <CardContent className="p-6 text-sm text-muted-foreground text-cen">
+        <CardContent className="p-6 text-sm text-muted-foreground text-center">
           No resumes uploaded yet.
         </CardContent>
       </Card>

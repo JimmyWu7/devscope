@@ -5,6 +5,7 @@ import { SidebarTrigger } from "../ui/sidebar";
 import { ModeToggle } from "../ui/mode-toggle";
 import Link from "next/link";
 import ResumeUploader from "./resumes/ResumeUploader";
+import SyncGithubButton from "../github/SyncGithubButton";
 
 type SiteHeaderProps = {
   title: string;
@@ -37,6 +38,7 @@ export function SiteHeader({
               Last synced: {latestSync.toLocaleString()}
             </p>
           )}
+          {title === "Projects" && <SyncGithubButton />}
           <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
             {githubProfile ? (
               <Link
@@ -45,7 +47,7 @@ export function SiteHeader({
                 rel="noopener noreferrer"
                 className="dark:text-foreground"
               >
-                My GitHub
+                View My GitHub
               </Link>
             ) : (
               <Link

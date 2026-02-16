@@ -8,7 +8,7 @@ import { auth, prisma } from "@/lib/auth";
 import { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import ApplicationsTracker from "@/components/layout/dashboard/ApplicationsTracker";
+import ApplicationsTracker from "@/components/layout/job-applications/ApplicationsTracker";
 
 export const metadata: Metadata = {
   title: "DevScope | Dashboard",
