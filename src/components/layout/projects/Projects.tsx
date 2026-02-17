@@ -7,13 +7,69 @@ import { Star, GitFork, Lock } from "lucide-react";
 interface ProjectProps {
   userId: string;
   page: number;
+  language: string;
+  type: string;
+  sort: string;
 }
 
-export default async function Projects({ userId }: ProjectProps) {
-  const repos = await prisma.githubRepo.findMany({
-    where: { userId },
-    orderBy: [{ pushedAt: "desc" }],
-  });
+const PAGE_SIZE = 9;
+
+export default async function Projects({
+  userId,
+  page,
+  language,
+  type,
+  sort,
+}: ProjectProps) {
+  const where: any = { userId };
+
+  // Language filter
+  if (language !== "all") {
+    where.language = language;
+  }
+
+  // Type filter
+  if (type === "public") where.isPrivate = false;
+  if (type === "private") where.isPrivate = true;
+  if (type === "forked") where.isFork = true;
+
+  // Sort by
+  let orderBy: any = { pushedAt: "desc" };
+  switch (sort) {
+    case "updated_asc":
+      orderBy = { pushedAt: "asc" };
+      break;
+    case "stars_desc":
+      orderBy = { stars: "desc" };
+      break;
+    case "stars_asc":
+      orderBy = { stars: "asc" };
+      break;
+    case "forks_desc":
+      orderBy = { forks: "desc" };
+      break;
+    case "forks_asc":
+      orderBy = { forks: "asc" };
+      break;
+    case "name_asc":
+      orderBy = { name: "asc" };
+      break;
+    case "name_desc":
+      orderBy = { name: "desc" };
+      break;
+  }
+
+  const [repos, total] = await Promise.all([
+    prisma.githubRepo.findMany({
+      where,
+      orderBy,
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+    prisma.githubRepo.count({ where }),
+  ]);
+
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
   if (repos.length === 0) {
     return (
@@ -85,6 +141,35 @@ export default async function Projects({ userId }: ProjectProps) {
           </Link>
         ))}
       </div>
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center gap-2 pt-6">
+          {Array.from({ length: totalPages }).map((_, i) => {
+            const pageNumber = i + 1;
+
+            // Build URL with filters and sort
+            const params = new URLSearchParams();
+            params.set("page", pageNumber.toString());
+            if (language !== "all") params.set("language", language);
+            if (type !== "all") params.set("type", type);
+            if (sort !== "updated_desc") params.set("sort", sort);
+
+            return (
+              <Link
+                key={pageNumber}
+                href={`/projects?${params.toString()}`}
+                className={`px-3 py-1 rounded-md text-sm border ${
+                  page === pageNumber
+                    ? "bg-muted-foreground text-white"
+                    : "hover:bg-muted"
+                }`}
+              >
+                {pageNumber}
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
