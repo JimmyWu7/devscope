@@ -1,6 +1,5 @@
 import { auth, prisma } from "@/lib/auth";
 import { headers } from "next/headers";
-import { NextResponse } from "next/server";
 import { r2 } from "@/lib/r2";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 
@@ -13,9 +12,7 @@ export async function GET(req: Request, context: RouteContext) {
     headers: await headers(),
   });
 
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!session) return new Response("Unauthorized", { status: 401 });
 
   const { id } = await context.params;
 
@@ -27,21 +24,21 @@ export async function GET(req: Request, context: RouteContext) {
     where: { id },
   });
 
-  if (!resume || resume.userId !== session.user.id) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!resume || resume.userId !== session.user.id || !resume.thumbnailKey) {
+    return new Response("Not found", { status: 404 });
   }
 
   const object = await r2.send(
     new GetObjectCommand({
       Bucket: process.env.R2_BUCKET_NAME!,
-      Key: resume.fileKey,
+      Key: resume.thumbnailKey,
     }),
   );
 
   return new Response(object.Body as ReadableStream, {
     headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="${resume.fileName}"`,
+      "Content-Type": "image/png",
+      "Cache-Control": "public, max-age=31536000, immutable",
     },
   });
 }

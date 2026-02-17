@@ -17,6 +17,7 @@ export async function POST(req: Request) {
   const formData = await req.formData();
   const file = formData.get("file") as File;
   const customName = formData.get("customName") as string | null;
+  const thumbnail = formData.get("thumbnail") as File | null;
 
   if (!file) {
     return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
@@ -39,6 +40,23 @@ export async function POST(req: Request) {
     }),
   );
 
+  let thumbnailKey: string | null = null;
+
+  if (thumbnail) {
+    const thumbnailBytes = Buffer.from(await thumbnail.arrayBuffer());
+
+    thumbnailKey = `resumes/${session.user.id}/thumbnails/${randomUUID()}.png`;
+
+    await r2.send(
+      new PutObjectCommand({
+        Bucket: process.env.R2_BUCKET_NAME!,
+        Key: thumbnailKey,
+        Body: thumbnailBytes,
+        ContentType: "image/png",
+      }),
+    );
+  }
+
   function sanitize(name: string) {
     return name
       .replace(/[^\w\s-]/g, "")
@@ -56,6 +74,7 @@ export async function POST(req: Request) {
       userId: session.user.id,
       fileName: safeName || "Untitled Resume",
       fileKey,
+      thumbnailKey,
       fileSize: file.size,
     },
   });

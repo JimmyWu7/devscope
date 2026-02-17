@@ -6,6 +6,7 @@ import { Upload, FileText, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import { convertPdfToImage } from "@/lib/pdf2img";
 
 export default function ResumeUploader() {
   const router = useRouter();
@@ -45,11 +46,15 @@ export default function ResumeUploader() {
 
     setUploading(true);
 
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-    formData.append("customName", cleanedName);
-
     try {
+      // 🔥 Convert PDF to image in browser
+      const thumbnailFile = await convertPdfToImage(selectedFile);
+
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("thumbnail", thumbnailFile);
+      formData.append("customName", cleanedName);
+
       const res = await fetch("/api/resumes/upload", {
         method: "POST",
         body: formData,

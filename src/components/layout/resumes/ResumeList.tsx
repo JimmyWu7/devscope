@@ -14,9 +14,15 @@ interface ResumeListProps {
 const PAGE_SIZE = 8;
 
 export default async function ResumeList({ userId, page }: ResumeListProps) {
-  const total = await prisma.resume.count({
-    where: { userId },
-  });
+  const [total, resumes] = await prisma.$transaction([
+    prisma.resume.count({ where: { userId } }),
+    prisma.resume.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+  ]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   if (page > totalPages) {
@@ -25,13 +31,6 @@ export default async function ResumeList({ userId, page }: ResumeListProps) {
 
   const start = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
   const end = Math.min(page * PAGE_SIZE, total);
-
-  const resumes = await prisma.resume.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-    skip: (page - 1) * PAGE_SIZE,
-    take: PAGE_SIZE,
-  });
 
   if (resumes.length === 0) {
     return (
@@ -52,15 +51,26 @@ export default async function ResumeList({ userId, page }: ResumeListProps) {
             key={resume.id}
             className="overflow-hidden hover:shadow-md transition-shadow group"
           >
-            <div className="relative aspect-square w-full bg-muted overflow-hidden">
+            <div className="relative aspect-3/4 w-full bg-muted overflow-hidden flex items-center justify-center">
               <DeleteResumeButton resumeId={resume.id} />
-              {/* Load the preview of the resume */}
-              <iframe
-                src={`/api/resumes/${resume.id}/view#toolbar=0`}
-                className="w-full h-full pointer-events-none"
-              />
 
-              {/* View Resume Button */}
+              {/* Static PDF Preview */}
+              {resume.thumbnailKey ? (
+                <img
+                  src={`/api/resumes/${resume.id}/thumbnail`}
+                  alt="Resume thumbnail"
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center text-center p-4">
+                  <FileText className="h-14 w-14 text-primary mb-3" />
+                  <p className="font-medium truncate w-full">
+                    {resume.fileName}
+                  </p>
+                </div>
+              )}
+
+              {/* Hover Overlay */}
               <div className="absolute inset-0 bg-background/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <Link
                   href={`/api/resumes/${resume.id}/view`}

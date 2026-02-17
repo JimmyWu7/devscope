@@ -22,5 +22,9 @@ export default function SyncGithubButton() {
     }
   };
 
-  return <Button onClick={handleSyncGithub}>Sync GitHub</Button>;
+  return (
+    <Button onClick={handleSyncGithub} className="cursor-pointer">
+      Sync GitHub
+    </Button>
+  );
 }
