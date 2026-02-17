@@ -10,6 +10,7 @@ interface ProjectProps {
   language: string;
   type: string;
   sort: string;
+  year: string;
 }
 
 const PAGE_SIZE = 9;
@@ -20,8 +21,15 @@ export default async function Projects({
   language,
   type,
   sort,
+  year,
 }: ProjectProps) {
   const where: any = { userId };
+
+  if (year !== "all") {
+    const start = new Date(Number(year), 0, 1); // Jan 1 of that year
+    const end = new Date(Number(year) + 1, 0, 1); // Jan 1 of next year
+    where.pushedAt = { gte: start, lt: end };
+  }
 
   // Language filter
   if (language !== "all") {
@@ -30,7 +38,7 @@ export default async function Projects({
 
   // Type filter
   if (type === "public") where.isPrivate = false;
-  if (type === "private") where.isPrivate = true;
+  // if (type === "private") where.isPrivate = true;
   if (type === "forked") where.isFork = true;
 
   // Sort by
@@ -153,6 +161,7 @@ export default async function Projects({
             if (language !== "all") params.set("language", language);
             if (type !== "all") params.set("type", type);
             if (sort !== "updated_desc") params.set("sort", sort);
+            if (year !== "all") params.set("year", year);
 
             return (
               <Link

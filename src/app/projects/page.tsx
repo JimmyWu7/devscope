@@ -1,4 +1,3 @@
-import ApplicationsTracker from "@/components/layout/job-applications/ApplicationsTracker";
 import Projects from "@/components/layout/projects/Projects";
 import ProjectsFilters from "@/components/layout/projects/ProjectsFilters";
 import { AppSidebar } from "@/components/layout/sidebar/AppSideBar";
@@ -20,6 +19,7 @@ interface PageProps {
     language?: string;
     type?: string;
     sort?: string;
+    year?: string;
   };
 }
 
@@ -38,6 +38,7 @@ const page = async ({
   const language = resolvedSearchParams.language ?? "all";
   const type = resolvedSearchParams.type ?? "all";
   const sort = resolvedSearchParams.sort ?? "updated_desc";
+  const year = resolvedSearchParams.year ?? "all";
 
   const githubProfile = await prisma.githubProfile.findUnique({
     where: { userId: session.user.id },
@@ -72,6 +73,26 @@ const page = async ({
     distinct: ["language"],
     select: { language: true },
   });
+
+  // Fetch all repo pushedAt dates for this user
+  const repoDates = await prisma.githubRepo.findMany({
+    where: { userId: session.user.id },
+    select: { pushedAt: true },
+    orderBy: { pushedAt: "asc" }, // earliest first
+  });
+
+  let minYear = new Date().getFullYear();
+  let maxYear = new Date().getFullYear();
+
+  if (repoDates.length > 0) {
+    minYear = repoDates[0].pushedAt.getFullYear();
+    maxYear = repoDates[repoDates.length - 1].pushedAt.getFullYear();
+  }
+
+  // Create descending list of years
+  const years = Array.from({ length: maxYear - minYear + 1 }, (_, i) =>
+    (maxYear - i).toString(),
+  );
 
   // Clean + remove null values
   const languages = languageResults
@@ -122,7 +143,9 @@ const page = async ({
                   currentLanguage={language}
                   currentType={type}
                   currentSort={sort}
+                  currentYear={year}
                   languages={languages}
+                  years={years}
                 />
                 <Projects
                   userId={session.user.id}
@@ -130,6 +153,7 @@ const page = async ({
                   language={language}
                   type={type}
                   sort={sort}
+                  year={year}
                 />
               </div>
             </div>

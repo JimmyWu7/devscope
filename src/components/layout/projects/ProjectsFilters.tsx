@@ -14,14 +14,18 @@ interface Props {
   currentLanguage: string;
   currentType: string;
   currentSort: string;
+  currentYear: string;
   languages: string[];
+  years: string[];
 }
 
 export default function ProjectsFilters({
   currentLanguage,
   currentType,
   currentSort,
+  currentYear,
   languages,
+  years,
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -64,8 +68,26 @@ export default function ProjectsFilters({
         <SelectContent>
           <SelectItem value="all">All</SelectItem>
           <SelectItem value="public">Public</SelectItem>
-          <SelectItem value="private">Private</SelectItem>
+          {/* <SelectItem value="private">Private</SelectItem> */}
           <SelectItem value="forked">Forked</SelectItem>
+        </SelectContent>
+      </Select>
+
+      {/* Year Filter */}
+      <Select
+        value={currentYear}
+        onValueChange={(val) => updateFilter("year", val)}
+      >
+        <SelectTrigger className="w-[120px]">
+          <SelectValue placeholder="Year" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Years</SelectItem>
+          {years.map((y) => (
+            <SelectItem key={y} value={y}>
+              {y}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
 
