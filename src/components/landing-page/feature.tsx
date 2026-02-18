@@ -10,6 +10,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   animate,
+  easeOut,
   motion,
   useMotionTemplate,
   useMotionValue,
@@ -45,7 +46,8 @@ const features = [
   {
     title: "Centralized Career Hub",
     description:
-      "Everything related to your developer career, applications, progress, and plans, in one dashboard.",
+      "All your developer career info, applications, progress, and plans in one dashboard.",
+
     icon: Activity,
   },
   {
@@ -55,6 +57,40 @@ const features = [
     icon: ShieldCheck,
   },
 ];
+
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      easeOut,
+    },
+  },
+};
+
+const cardVariant = {
+  hidden: { opacity: 0, y: 40, scale: 0.98 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.6,
+      easeOut,
+    },
+  },
+};
 
 type FeatureCardProps = {
   feature: any;
@@ -105,6 +141,7 @@ export function FeatureCard({ feature, isActive }: FeatureCardProps) {
 
   return (
     <div ref={tabRef} className="relative">
+      {/* Animated border glow */}
       <motion.div
         style={{ maskImage }}
         initial={false}
@@ -146,29 +183,46 @@ export default function Feature() {
       id="features"
       className="w-full flex justify-center items-center py-16"
     >
-      <div className="w-full flex flex-col items-center justify-center">
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={containerVariants}
+        className="w-full flex flex-col items-center justify-center"
+      >
         {/* Section header */}
         <div className="flex flex-col items-center max-w-80 sm:max-w-xl md:max-w-3xl lg:max-w-4xl text-center mb-12 space-y-4">
-          <h2 className="text-3xl md:text-4xl font-bold">
+          <motion.h2
+            variants={fadeUp}
+            className="text-3xl md:text-4xl font-bold"
+          >
             Everything you need to grow your developer career
-          </h2>
-          <p className="text-sm md:text-lg text-muted-foreground max-w-md md:max-w-lg lg:max-w-xl">
+          </motion.h2>
+          <motion.p
+            variants={fadeUp}
+            className="text-sm md:text-lg text-muted-foreground max-w-md md:max-w-lg lg:max-w-xl"
+          >
             DevScope brings clarity to your job search, learning progress, and
             career growth — all in one modern dashboard.
-          </p>
+          </motion.p>
         </div>
 
         {/* Feature grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-80 sm:max-w-xl md:max-w-3xl lg:max-w-6xl">
+        <motion.div
+          variants={containerVariants}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-80 sm:max-w-xl md:max-w-3xl lg:max-w-6xl"
+        >
           {features.map((feature, index) => (
-            <FeatureCard
-              key={feature.title}
-              feature={feature}
-              isActive={index === activeIndex}
-            />
+            <motion.div key={feature.title} variants={cardVariant}>
+              <FeatureCard
+                key={feature.title}
+                feature={feature}
+                isActive={index === activeIndex}
+              />
+            </motion.div>
           ))}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
