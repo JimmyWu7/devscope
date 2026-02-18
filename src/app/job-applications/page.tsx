@@ -78,7 +78,7 @@ const page = async () => {
                   }
                 : null
             }
-            latestSync={latestSync?.syncedAt ?? null}
+            latestSync={null}
           />
           <div className="flex flex-1 flex-col">
             <div className="@container/main flex flex-1 flex-col gap-2">

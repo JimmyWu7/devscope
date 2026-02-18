@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button"; // Shadcn Button
 import Link from "next/link";
 import LogoTicker from "./logo-ticker";
+import StackedShowcase from "./stacked-showcase";
 
 export default function Hero() {
   return (
@@ -34,13 +35,7 @@ export default function Hero() {
 
         {/* Illustration */}
         <div className="flex items-center justify-center w-full max-w-5xl px-0 sm:px-6 lg:px-0">
-          <Image
-            src="/dashboard-ui-sample.png"
-            alt="Dashboard Illustration"
-            width={1200}
-            height={600}
-            className="w-80 sm:w-full h-auto rounded-lg shadow-lg"
-          />
+          <StackedShowcase />
         </div>
         <div className="max-w-80 sm:max-w-lg md:max-w-xl lg:max-w-4xl">
           <LogoTicker />

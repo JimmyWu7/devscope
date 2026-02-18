@@ -209,7 +209,9 @@ export function AppSidebar({
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={githubProfile || { username: "", avatarUrl: "" }} />
+        <NavUser
+          user={githubProfile || { username: "John Doe", avatarUrl: "" }}
+        />
       </SidebarFooter>
     </Sidebar>
   );
