@@ -37,9 +37,9 @@ export default async function Projects({
   }
 
   // Type filter
-  if (type === "public") where.isPrivate = false;
-  // if (type === "private") where.isPrivate = true;
+  if (type === "original") where.isFork = false;
   if (type === "forked") where.isFork = true;
+  // if (type === "private") where.isPrivate = true;
 
   // Sort by
   let orderBy: any = { pushedAt: "desc" };

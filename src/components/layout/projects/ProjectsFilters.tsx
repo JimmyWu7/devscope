@@ -66,10 +66,10 @@ export default function ProjectsFilters({
           <SelectValue placeholder="Repository Type" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All</SelectItem>
-          <SelectItem value="public">Public</SelectItem>
+          <SelectItem value="all">All Repositories</SelectItem>
+          <SelectItem value="original">Original Only</SelectItem>
+          <SelectItem value="forked">Forked Only</SelectItem>
           {/* <SelectItem value="private">Private</SelectItem> */}
-          <SelectItem value="forked">Forked</SelectItem>
         </SelectContent>
       </Select>
 

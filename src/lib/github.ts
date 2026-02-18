@@ -38,7 +38,7 @@ export async function syncGitHubData({
   );
   const repos = await reposRes.json();
 
-  // console.log("Synced Repos: ", repos);
+  console.log("Synced Repos: ", repos);
 
   await prisma.githubRepo.deleteMany({ where: { userId } });
 

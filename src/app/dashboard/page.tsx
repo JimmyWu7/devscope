@@ -1,6 +1,4 @@
-import SyncGithubButton from "@/components/github/SyncGithubButton";
 import { AppSidebar } from "@/components/layout/sidebar/AppSideBar";
-import { ChartAreaInteractive } from "@/components/layout/dashboard/ChatAreaInteractive";
 import { CommitsCard } from "@/components/layout/dashboard/CommitsCard";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -9,6 +7,8 @@ import { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import ApplicationsTracker from "@/components/layout/job-applications/ApplicationsTracker";
+import { SectionCards } from "@/components/layout/dashboard/SectionCards";
+import { startOfMonth } from "date-fns";
 
 export const metadata: Metadata = {
   title: "DevScope | Dashboard",
@@ -43,14 +43,66 @@ const page = async () => {
     }
   }
 
-  // const repos = await prisma.githubRepo.findMany({
-  //   where: { userId: session.user.id },
-  //   orderBy: { pushedAt: "desc" },
-  // });
-
   const latestSync = await prisma.githubSync.findUnique({
     where: { userId: session.user.id },
   });
+
+  const userId = session.user.id;
+  const startOfCurrentMonth = startOfMonth(new Date());
+
+  const [
+    totalApplications,
+    applicationsThisMonth,
+    interviews,
+    offers,
+    rejected,
+    active,
+    resumeCount,
+    repos,
+  ] = await Promise.all([
+    prisma.jobApplication.count({
+      where: { userId },
+    }),
+    prisma.jobApplication.count({
+      where: {
+        userId,
+        dateApplied: {
+          gte: startOfCurrentMonth,
+        },
+      },
+    }),
+    prisma.jobApplication.count({
+      where: { userId, status: "INTERVIEW" },
+    }),
+    prisma.jobApplication.count({
+      where: { userId, status: "OFFER" },
+    }),
+    prisma.jobApplication.count({
+      where: { userId, status: "REJECTED" },
+    }),
+    prisma.jobApplication.count({
+      where: {
+        userId,
+        status: {
+          in: ["APPLIED", "INTERVIEW"],
+        },
+      },
+    }),
+    prisma.resume.count({
+      where: { userId },
+    }),
+    prisma.githubRepo.findMany({
+      where: { userId },
+      select: { stars: true },
+    }),
+  ]);
+
+  const totalStars = repos.reduce((acc, repo) => acc + repo.stars, 0);
+
+  const interviewRate =
+    totalApplications === 0
+      ? 0
+      : Math.round((interviews / totalApplications) * 100);
 
   return (
     <div>
@@ -86,41 +138,33 @@ const page = async () => {
                   }
                 : null
             }
-            latestSync={latestSync?.syncedAt ?? null}
+            latestSync={null}
           />
           <div className="flex flex-1 flex-col">
             <div className="@container/main flex flex-1 flex-col gap-2">
               <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+                <SectionCards
+                  stats={{
+                    totalApplications,
+                    applicationsThisMonth,
+                    interviews,
+                    offers,
+                    rejected,
+                    active,
+                    resumeCount,
+                    totalStars,
+                    interviewRate,
+                  }}
+                />
+
                 <CommitsCard />
-                {/* <div className="px-4 lg:px-6"> */}
                 {/* <ChartAreaInteractive /> */}
-                {/* </div> */}
-                {/* Table here */}
                 <ApplicationsTracker />
               </div>
             </div>
           </div>
         </SidebarInset>
       </SidebarProvider>
-      {/* <div className="flex items-center justify-end gap-4 p-4 border rounded-md">
-        <p className="text-sm text-muted-foreground">
-          Last synced:{" "}
-          {latestSync ? latestSync.syncedAt.toLocaleString() : "Never"}
-        </p>
-
-        <SyncGithubButton />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-        {repos.map((repo) => (
-          <div key={repo.id} className="border rounded-md p-4">
-            <h3 className="font-semibold">{repo.name}</h3>
-            <p className="text-sm text-muted-foreground">
-              ⭐ {repo.stars} · 🍴 {repo.forks}
-            </p>
-          </div>
-        ))}
-      </div> */}
     </div>
   );
 };
