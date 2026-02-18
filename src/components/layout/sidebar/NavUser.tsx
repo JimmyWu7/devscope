@@ -24,6 +24,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { authClient } from "@/lib/auth-client";
 
 export function NavUser({
   user,
@@ -35,6 +38,18 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await authClient.signOut();
+      toast.success("Logout successfully!");
+      router.push("/auth/login");
+    } catch (err) {
+      toast.error("Failed to logout!");
+      console.log("Logout failed: ", err);
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -55,7 +70,7 @@ export function NavUser({
                   {user.email}
                 </span> */}
               </div>
-              <IconDotsVertical className="ml-auto size-4" />
+              <IconDotsVertical className="ml-auto size-4 cursor-pointer" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -94,7 +109,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
               <IconLogout />
               Log out
             </DropdownMenuItem>

@@ -110,7 +110,7 @@ export function AddJobApplicationDialog() {
         salaryMax: data.salaryMax ?? null,
         salaryCurrency:
           data.salaryMin || data.salaryMax
-            ? data.salaryCurrency ?? "USD"
+            ? (data.salaryCurrency ?? "USD")
             : null,
       };
       // console.log("Submit Normalized", normalized)
@@ -143,7 +143,9 @@ export function AddJobApplicationDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm">Add Job Application</Button>
+        <Button size="sm" className="cursor-pointer">
+          Add Job Application
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="w-full max-h-[80vh] overflow-auto">
@@ -236,7 +238,7 @@ export function AddJobApplicationDialog() {
                             field.onChange(
                               e.target.value === ""
                                 ? undefined
-                                : Math.max(0, Number(e.target.value))
+                                : Math.max(0, Number(e.target.value)),
                             )
                           }
                           placeholder="50000"
@@ -265,7 +267,7 @@ export function AddJobApplicationDialog() {
                             field.onChange(
                               e.target.value === ""
                                 ? undefined
-                                : Math.max(0, Number(e.target.value))
+                                : Math.max(0, Number(e.target.value)),
                             )
                           }
                           placeholder="70000"
@@ -431,6 +433,7 @@ export function AddJobApplicationDialog() {
               type="button"
               variant="outline"
               onClick={() => form.reset()}
+              className="cursor-pointer"
             >
               Reset
             </Button>
@@ -439,7 +442,9 @@ export function AddJobApplicationDialog() {
               form="job-application-form"
               disabled={form.formState.isSubmitting}
             >
-              <LoadingSwap isLoading={isSubmitting}>Submit</LoadingSwap>
+              <LoadingSwap isLoading={isSubmitting} className="cursor-pointer">
+                Submit
+              </LoadingSwap>
             </Button>
           </CardFooter>
         </Card>

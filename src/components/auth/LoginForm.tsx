@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +24,9 @@ export function LoginForm() {
         callbackURL: "/dashboard",
         errorCallbackURL: "/error",
       });
+      toast.success("Logged in successfully!");
     } catch (err) {
+      toast.error("Failed to login");
     } finally {
       setIsLoading(false);
     }

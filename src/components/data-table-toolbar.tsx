@@ -42,6 +42,7 @@ export function DataTableToolbar<TData>({
             variant="ghost"
             size="sm"
             onClick={() => table.resetColumnFilters()}
+            className="cursor-pointer"
           >
             Reset
             <X />

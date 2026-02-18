@@ -127,10 +127,10 @@ export function CommitsCard() {
               </div>
 
               {/* Scrollable area */}
-              <div className="overflow-x-auto lg:overflow-visible">
-                <div className="min-w-max lg:min-w-0">
+              <div className="overflow-x-auto xl:overflow-visible">
+                <div className="min-w-max xl:min-w-0">
                   {/* Month labels */}
-                  <div className="mb-2 grid grid-cols-53 gap-1 text-xs text-muted-foreground">
+                  <div className="mb-2 grid grid-cols-53 text-xs text-muted-foreground">
                     {monthLabels.map((month, i) => (
                       <div key={i}>{month}</div>
                     ))}
