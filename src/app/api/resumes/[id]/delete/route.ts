@@ -1,18 +1,26 @@
 import { auth, prisma } from "@/lib/auth";
 import { headers } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { r2 } from "@/lib/r2";
 
+interface Params {
+  id?: string;
+}
+
 export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } },
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  const { id } = await params;
+  const { id } = await context.params;
+
+  if (!id) {
+    return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+  }
 
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
