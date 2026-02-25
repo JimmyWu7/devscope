@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "DevScope Companion",
+  "version": "1.0.0",
+  "description": "Automatically capture job applications and send to DevScope.",
+  "permissions": ["storage", "activeTab", "scripting"],
+  "externally_connectable": {
+    "matches": ["https://devscope-flame.vercel.app/*"]
+  },
+  "host_permissions": [
+    "https://*.linkedin.com/*",
+    "https://*.indeed.com/*",
+    "https://*.glassdoor.com/*",
+    "https://*.joinhandshake.com/*",
+    "http://localhost:3000/*"
+  ],
+  "background": {
+    "service_worker": "src/background.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.linkedin.com/*",
+        "https://*.indeed.com/*",
+        "https://*.glassdoor.com/*",
+        "https://*.joinhandshake.com/*",
+        "http://localhost:3000/*"
+      ],
+      "js": ["src/content.ts"]
+    }
+  ],
+  "action": {
+    "default_popup": "src/popup/index.html"
+  }
+}

@@ -47,3 +47,4 @@ next-env.d.ts
 src/constants/ApplicationsTrackerDemo.tsx
 src/constants/demo-dashboard.ts
 src/constants/table-data.ts
+src/constants/schema.ts

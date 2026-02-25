@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { labels } from "@/constants/data";
-import { jobAppSchema } from "@/constants/schema";
+// import { jobAppSchema } from "@/constants/schema";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
