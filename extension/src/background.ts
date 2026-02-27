@@ -1,10 +1,3 @@
-/* {
-    "role": "Junior Software Developer",
-    "company": "",
-    "location": "https://www.linkedin.com/jobs/collections/recommended/?currentJobId=4375059212",
-    "dateApplied": "2026-02-24T06:20:56.249Z"
-} */
-
 const API_BASE = "http://localhost:3000";
 const IDLE_WARNING_MS = 24 * 60 * 60 * 1000; // 24 hours
 const AUTO_DISCONNECT_MS = 2 * 60 * 60 * 1000; // 2 hours

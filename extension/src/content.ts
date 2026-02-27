@@ -1,14 +1,4 @@
-function extractLinkedInJob() {
-  const role = document.querySelector("h1")?.textContent?.trim() ?? "";
-  const company =
-    document.querySelector('a[href*="/company/"]')?.textContent?.trim() ?? "";
-  return {
-    role,
-    company,
-    location: window.location.href,
-    dateApplied: new Date().toISOString(),
-  };
-}
+import { detectAndParse } from "./content/parsers";
 window.addEventListener("message", (event) => {
   if (event.source !== window) return;
 
@@ -20,15 +10,22 @@ window.addEventListener("message", (event) => {
   }
 });
 
-document.addEventListener("click", (event) => {
-  const target = event.target as HTMLElement;
-  if (!target) return;
-  if (target.innerText?.toLowerCase().includes("submit")) {
-    const jobData = extractLinkedInJob();
-    console.log("Detected job submission:", jobData);
-    chrome.runtime.sendMessage({
-      type: "JOB_APPLICATION_DETECTED",
-      payload: jobData,
-    });
+document.addEventListener("submit", () => {
+  const jobData = detectAndParse();
+
+  if (!jobData) return;
+
+  chrome.runtime.sendMessage({
+    type: "JOB_APPLICATION_DETECTED",
+    payload: jobData,
+  });
+});
+
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message.type === "ANALYZE_PAGE") {
+    const jobData = detectAndParse();
+    sendResponse(jobData);
   }
+
+  return true;
 });
