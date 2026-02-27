@@ -7,7 +7,7 @@
 
 const API_BASE = "http://localhost:3000";
 const IDLE_WARNING_MS = 24 * 60 * 60 * 1000; // 24 hours
-const AUTO_DISCONNECT_MS = 1 * 60 * 1000; // 2 hours
+const AUTO_DISCONNECT_MS = 2 * 60 * 60 * 1000; // 2 hours
 
 async function attemptRefresh(): Promise<boolean> {
   try {
