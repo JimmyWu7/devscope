@@ -12,7 +12,6 @@ export interface JobApplication {
   company: string;
   role: string;
   location: string;
-  salary: string;
   salaryMin: string;
   salaryMax: string;
   dateApplied: string;

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { parseSalaryRange } from "../../shared/salary";
 import type { JobApplication } from "../../shared/types";
 
 export function useAnalyzePage() {
@@ -19,9 +18,7 @@ export function useAnalyzePage() {
 
     if (!extracted) return;
 
-    const salaryParsed = parseSalaryRange(extracted.salary);
-
-    setJobData({ ...extracted, ...salaryParsed });
+    setJobData(extracted);
   }
 
   return { jobData, setJobData, analyzeCurrentPage };

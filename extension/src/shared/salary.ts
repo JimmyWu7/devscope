@@ -3,22 +3,26 @@ export function parseSalaryRange(raw: string) {
 
   const normalized = raw.replace(/[–—]/g, "-").toLowerCase();
 
-  const convertToNumber = (value: string) => {
+  function convertToNumber(value: string, forceThousands = false): string {
     const cleaned = value.replace(/[^0-9k.]/g, "");
 
-    if (cleaned.includes("k")) {
-      return (parseFloat(cleaned.replace("k", "")) * 1000).toString();
+    if (!cleaned) return "";
+
+    let number = parseFloat(cleaned.replace("k", ""));
+
+    if (cleaned.includes("k") || forceThousands) {
+      number *= 1000;
     }
 
-    return cleaned;
-  };
+    return Math.round(number).toString();
+  }
 
   if (normalized.includes("-")) {
     const [minRaw, maxRaw] = normalized.split("-");
-    return {
-      salaryMin: convertToNumber(minRaw),
-      salaryMax: convertToNumber(maxRaw),
-    };
+    const hasK = normalized.includes("k");
+    const salaryMin = convertToNumber(minRaw, hasK);
+    const salaryMax = convertToNumber(maxRaw, hasK);
+    return { salaryMin, salaryMax };
   }
 
   return {

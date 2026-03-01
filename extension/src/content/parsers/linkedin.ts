@@ -1,3 +1,5 @@
+import { parseSalaryRange } from "../../shared/salary";
+
 export function parseLinkedIn() {
   const getText = (selector: string) =>
     document.querySelector(selector)?.textContent?.trim() ?? "";
@@ -6,7 +8,7 @@ export function parseLinkedIn() {
   let role = getText(".job-details-jobs-unified-top-card__job-title h1");
   let location = "";
   let datePosted = "";
-  let salary = "";
+  let salaryRaw = "";
 
   // LOCATION + DATE POSTED
   const tertiaryContainer = document.querySelector(
@@ -57,15 +59,18 @@ export function parseLinkedIn() {
   const topCard = document.querySelector(".job-details-fit-level-preferences");
 
   if (topCard) {
-    salary = parseSalary(topCard.textContent || "");
+    salaryRaw = parseSalary(topCard.textContent || "");
   }
+
   // FALLBACK TO JOB DESCRIPTION
-  if (!salary) {
+  if (!salaryRaw) {
     const description =
       document.querySelector("#job-details")?.textContent || "";
 
-    salary = parseSalary(description);
+    salaryRaw = parseSalary(description);
   }
+
+  const { salaryMin, salaryMax } = parseSalaryRange(salaryRaw);
 
   // Convert "# days ago" to actual date
   if (datePosted) {
@@ -90,9 +95,8 @@ export function parseLinkedIn() {
     company,
     role,
     location,
-    salary,
-    salaryMin: "",
-    salaryMax: "",
+    salaryMin,
+    salaryMax,
     dateApplied: new Date().toISOString().split("T")[0],
     datePosted,
     applicationUrl: window.location.href,

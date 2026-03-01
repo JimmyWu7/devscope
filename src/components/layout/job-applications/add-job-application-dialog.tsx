@@ -101,19 +101,22 @@ export function AddJobApplicationDialog() {
   async function onSubmit(data: JobApplicationFormValues) {
     try {
       setIsSubmitting(true);
+      console.log("Job Application Dialog Data", data);
       const normalized = {
-        ...data,
+        company: data.company,
+        role: data.role,
         location: data.location?.trim() || null,
-        applicationUrl: data.applicationUrl?.trim() || null,
-        notes: data.notes?.trim() || null,
         salaryMin: data.salaryMin ?? null,
         salaryMax: data.salaryMax ?? null,
         salaryCurrency:
           data.salaryMin || data.salaryMax
             ? (data.salaryCurrency ?? "USD")
             : null,
+        status: data.status,
+        applicationUrl: data.applicationUrl?.trim() || null,
+        notes: data.notes?.trim() || null,
       };
-      // console.log("Submit Normalized", normalized)
+      console.log("Submit Normalized", normalized);
 
       const res = await fetch("/api/job-applications", {
         method: "POST",

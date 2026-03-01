@@ -4,6 +4,16 @@ import { headers } from "next/headers";
 import jwt from "jsonwebtoken";
 
 export async function POST(req: Request) {
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    });
+  }
   // Extension Authorization
   const authHeader = req.headers.get("authorization");
   let userId: string | null = null;
@@ -14,9 +24,11 @@ export async function POST(req: Request) {
 
     try {
       const decoded = jwt.verify(token, process.env.EXTENSION_SECRET!) as any;
+      // console.log("Decoded", decoded);
 
       userId = decoded.userId;
     } catch {
+      console.log("Invalid Token");
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
   }
@@ -34,24 +46,33 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-  // console.log("POST Job", body);
+  // console.log("POST API Job", body);
 
   const job = await prisma.jobApplication.create({
     data: {
-      ...body,
-      userId: userId,
-      dateApplied: new Date(body.dateApplied),
-      datePosted: body.datePosted ? new Date(body.datePosted) : new Date(), // ✅ default to now
-      salaryMin: body.salaryMin ?? null,
-      salaryMax: body.salaryMax ?? null,
-      salaryCurrency: body.salaryCurrency ?? null,
+      // Required fields
+      userId: userId!,
+      company: body.company,
+      role: body.role,
+
+      // Optional fields
+      status: body.status ?? "APPLIED",
+      dateApplied: body.dateApplied ? new Date(body.dateApplied) : new Date(),
+      datePosted: body.datePosted ? new Date(body.datePosted) : new Date(),
+      salaryMin: body.salaryMin !== null ? Number(body.salaryMin) : null,
+      salaryMax: body.salaryMax !== null ? Number(body.salaryMax) : null,
+      salaryCurrency: body.salaryCurrency ?? "USD",
       applicationUrl: body.applicationUrl ?? null,
       location: body.location ?? null,
       notes: body.notes ?? null,
     },
   });
 
-  return NextResponse.json(job);
+  return NextResponse.json(job, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
 }
 
 export async function GET() {

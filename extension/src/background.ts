@@ -134,6 +134,12 @@ chrome.runtime.onMessage.addListener((message) => {
     });
   }
 
+  if (message.type === "EXTENSION_ACTIVITY") {
+    chrome.storage.local.set({
+      lastActivityAt: Date.now(),
+    });
+  }
+
   return true;
 });
 

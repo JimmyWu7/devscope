@@ -1,11 +1,74 @@
+import { useState } from "react";
 import type { JobApplication } from "../../shared/types";
+import { toast } from "sonner";
 
 interface Props {
   jobData: JobApplication;
-  setJobData: (data: JobApplication) => void;
+  setJobData: (data: JobApplication | null) => void;
+  token: string;
 }
 
-export default function JobForm({ jobData, setJobData }: Props) {
+function markActivity() {
+  chrome.runtime.sendMessage({ type: "EXTENSION_ACTIVITY" });
+}
+
+export default function JobForm({ jobData, setJobData, token }: Props) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function handleSubmit() {
+    try {
+      setIsSubmitting(true);
+
+      const normalized = {
+        ...jobData,
+        status: "APPLIED", // default for extension
+        salaryMin: jobData.salaryMin ? Number(jobData.salaryMin) : null,
+        salaryMax: jobData.salaryMax ? Number(jobData.salaryMax) : null,
+        salaryCurrency: jobData.salaryMin || jobData.salaryMax ? "USD" : null,
+        location: jobData.location || null,
+        applicationUrl: jobData.applicationUrl || null,
+        notes: jobData.notes || null,
+      };
+      // console.log("(extension) JobForm Normalized", normalized);
+      markActivity();
+
+      const res = await fetch("http://localhost:3000/api/job-applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(normalized),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to save job");
+      }
+
+      toast.success("✅ Job added to DevScope!");
+      setJobData({
+        ...jobData,
+        company: "",
+        role: "",
+        location: "",
+        salaryMin: "",
+        salaryMax: "",
+        dateApplied: "",
+        datePosted: "",
+        applicationUrl: "",
+        notes: "",
+      });
+      setJobData(null);
+      markActivity();
+    } catch (err) {
+      toast.error("❌ Failed to add job");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <div className="mt-3 space-y-2 border-t pt-3">
       {/* Company */}
@@ -87,15 +150,16 @@ export default function JobForm({ jobData, setJobData }: Props) {
       {/* Confirmation Button */}
       <div className="flex gap-2">
         <button
-          className="flex-1 py-2 rounded bg-green-600 text-white cursor-pointer"
-          onClick={() => console.log("Track on DevScope:", jobData)}
+          className="flex-1 py-2 rounded bg-green-600 text-white cursor-pointer disabled:opacity-50"
+          onClick={handleSubmit}
+          disabled={isSubmitting}
         >
-          Yes, Track
+          {isSubmitting ? "Saving..." : "Yes, Track"}
         </button>
 
         <button
           className="flex-1 py-2 rounded border cursor-pointer"
-          // onClick={() => setJobData(null)}
+          onClick={() => setJobData(null)}
         >
           Cancel
         </button>

@@ -141,8 +141,12 @@ model JobApplication {
   applicationUrl String?
   salaryMin      Int?
   salaryMax      Int?
-  salaryCurrency String?  @default("USD")
+  salaryCurrency String  @default("USD")
+  // salaryType     String
   location       String?
+  // isRemote       Boolean
+  // isHybrid       Boolean
+  // isOnsite       Boolean
   status         JobApplicationStatus
   dateApplied    DateTime
   datePosted     DateTime?

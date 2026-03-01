@@ -112,7 +112,7 @@ CREATE TABLE "job_application" (
     "applicationUrl" TEXT,
     "salaryMin" INTEGER,
     "salaryMax" INTEGER,
-    "salaryCurrency" TEXT DEFAULT 'USD',
+    "salaryCurrency" TEXT NOT NULL DEFAULT 'USD',
     "location" TEXT,
     "status" "JobApplicationStatus" NOT NULL,
     "dateApplied" TIMESTAMP(3) NOT NULL,

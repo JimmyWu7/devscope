@@ -57,7 +57,11 @@ function App() {
                 </button>
 
                 {jobData && (
-                  <JobForm jobData={jobData} setJobData={setJobData} />
+                  <JobForm
+                    jobData={jobData}
+                    setJobData={setJobData}
+                    token={token!}
+                  />
                 )}
 
                 <Settings
