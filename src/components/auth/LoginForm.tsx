@@ -9,16 +9,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
-import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export function LoginForm() {
+export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
   const [isLoading, setIsLoading] = useState(false);
-  const searchParams = useSearchParams();
-
   // If callbackUrl exists, use it. Otherwise default to dashboard.
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const finalCallbackUrl = callbackUrl || "/dashboard";
 
   const handleSocialAuth = async (provider: "github" | "google") => {
     setIsLoading(true);
@@ -26,7 +23,7 @@ export function LoginForm() {
     try {
       await authClient.signIn.social({
         provider: provider,
-        callbackURL: callbackUrl,
+        callbackURL: finalCallbackUrl,
         errorCallbackURL: "/error",
       });
       toast.success("Logged in successfully!");
