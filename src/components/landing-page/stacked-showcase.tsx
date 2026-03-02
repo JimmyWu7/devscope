@@ -57,8 +57,6 @@ export default function StackedShowcase() {
         key={cards[back].id}
         onClick={swap}
         initial={false}
-        // ! Update for better view of back card in xl screens
-        // ! Need to re-screenshot for the portfolio website
         animate={{
           x: isMobile ? -15 : -55,
           y: isMobile ? -10 : -45,

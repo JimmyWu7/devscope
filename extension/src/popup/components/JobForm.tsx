@@ -203,6 +203,7 @@ export default function JobForm({ jobData, setJobData, token }: Props) {
           >
             <option value="">Select Platform</option>
             <option value="LINKEDIN">LinkedIn</option>
+            <option value="HANDSHAKE">Handshake</option>
             <option value="INDEED">Indeed</option>
             <option value="GLASSDOOR">Glassdoor</option>
             <option value="OTHER">Other</option>

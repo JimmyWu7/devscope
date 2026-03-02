@@ -21,7 +21,7 @@ export function parseHandshake() {
   let datePosted = "";
   if (dateEl) {
     const match = dateEl.textContent?.match(
-      /Posted (\d+)\s*(hours?|days?|weeks?|months?) ago/i,
+      /Posted (\d+)\s*(hours?|days?|weeks?|months?|years?) ago/i,
     );
     if (match) {
       const now = new Date();
@@ -36,6 +36,8 @@ export function parseHandshake() {
         now.setDate(now.getDate() - value * 7);
       } else if (unit.startsWith("month")) {
         now.setMonth(now.getMonth() - value);
+      } else if (unit.startsWith("year")) {
+        now.setFullYear(now.getFullYear() - value);
       }
 
       datePosted = now.toISOString().split("T")[0];
@@ -44,6 +46,8 @@ export function parseHandshake() {
 
   let salaryRaw = "";
   let location = "";
+  let salaryType: "HOURLY" | "MONTHLY" | "YEARLY" | null = null;
+  let workMode: "REMOTE" | "HYBRID" | "ONSITE" | null = null;
 
   const atAGlanceHeader = Array.from(container.querySelectorAll("h3")).find(
     (h3) => h3.textContent?.trim().toLowerCase() === "at a glance",
@@ -66,6 +70,7 @@ export function parseHandshake() {
         if (!primary) return;
 
         const text = primary.textContent?.trim() || "";
+        const lower = text.toLowerCase();
 
         /* ---- Salary Detection ---- */
         if (!salaryRaw) {
@@ -76,22 +81,48 @@ export function parseHandshake() {
 
           if (salaryMatch) {
             salaryRaw = salaryMatch[0];
-            return;
+            // Detect salary type
+            if (
+              lower.includes("/hr") ||
+              lower.includes("per hour") ||
+              lower.includes("/hour")
+            ) {
+              salaryType = "HOURLY";
+            } else if (
+              lower.includes("/month") ||
+              lower.includes("per month")
+            ) {
+              salaryType = "MONTHLY";
+            } else {
+              salaryType = "YEARLY";
+            }
           }
+        }
+
+        /* ---- Work Mode Detection ---- */
+        if (!workMode) {
+          if (lower.includes("remote")) workMode = "REMOTE";
+          else if (lower.includes("hybrid")) workMode = "HYBRID";
+          else if (lower.includes("onsite") || lower.includes("on-site"))
+            workMode = "ONSITE";
         }
 
         /* ---- Location Detection ---- */
         if (!location) {
-          const lower = text.toLowerCase();
+          let cleaned = text;
 
-          if (
-            lower.includes("remote") ||
-            lower.includes("hybrid") ||
-            lower.includes("onsite") ||
-            lower.includes("based in") ||
-            /,\s?[A-Z]{2}/.test(text)
-          ) {
-            location = text.replace(/\+\d+.*/, "").trim();
+          // Remove everything before "based in"
+          cleaned = cleaned.replace(/^.*?\bbased in\b\s*/i, "");
+
+          // Get ALL City, ST matches
+          const matches = cleaned.match(/[A-Za-z\s]+,\s?[A-Z]{2}/g);
+
+          if (matches && matches.length > 0) {
+            // Remove duplicates (Handshake sometimes repeats)
+            const unique = Array.from(new Set(matches.map((m) => m.trim())));
+
+            // Join multiple locations with comma + space
+            location = unique.join(", ");
           }
         }
       });
@@ -121,9 +152,12 @@ export function parseHandshake() {
     location,
     salaryMin,
     salaryMax,
+    salaryType,
+    workMode,
     dateApplied: new Date().toISOString().split("T")[0],
     datePosted,
     applicationUrl: window.location.href,
+    platform: "HANDSHAKE",
     notes: "",
   };
 }
