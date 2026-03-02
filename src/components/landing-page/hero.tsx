@@ -68,7 +68,7 @@ export default function Hero() {
         {/* Illustration */}
         <motion.div
           variants={fadeUp}
-          className="flex items-center justify-center w-full max-w-5xl px-0 sm:px-6 lg:px-0"
+          className="flex items-center justify-center mb-10 md:mb-14 lg:mb-20 md:mt-5 w-full max-w-3xl xl:max-w-5xl px-0 sm:px-6 lg:px-0"
         >
           <StackedShowcase />
         </motion.div>

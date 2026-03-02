@@ -3,7 +3,10 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="w-full mt-20 bg-linear-to-b from-muted/30 to-background border-t">
+    <footer
+      id="docs"
+      className="w-full mt-20 bg-linear-to-b from-muted/30 to-background border-t"
+    >
       <div className="max-w-6xl mx-auto px-6 py-4 md:py-8">
         {/* Top Section */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 lg:gap-10 text-center lg:text-left">
