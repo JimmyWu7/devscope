@@ -1,6 +1,15 @@
 -- CreateEnum
 CREATE TYPE "JobApplicationStatus" AS ENUM ('APPLIED', 'INTERVIEW', 'OFFER', 'REJECTED');
 
+-- CreateEnum
+CREATE TYPE "SalaryType" AS ENUM ('YEARLY', 'HOURLY', 'MONTHLY', 'WEEKLY');
+
+-- CreateEnum
+CREATE TYPE "WorkMode" AS ENUM ('REMOTE', 'HYBRID', 'ONSITE');
+
+-- CreateEnum
+CREATE TYPE "JobPlatform" AS ENUM ('LINKEDIN', 'INDEED', 'HANDSHAKE', 'GLASSDOOR', 'COMPANY_SITE', 'OTHER');
+
 -- CreateTable
 CREATE TABLE "user" (
     "id" TEXT NOT NULL,
@@ -109,11 +118,14 @@ CREATE TABLE "job_application" (
     "userId" TEXT NOT NULL,
     "company" TEXT NOT NULL,
     "role" TEXT NOT NULL,
+    "platform" "JobPlatform",
     "applicationUrl" TEXT,
     "salaryMin" INTEGER,
     "salaryMax" INTEGER,
-    "salaryCurrency" TEXT NOT NULL DEFAULT 'USD',
+    "salaryCurrency" TEXT DEFAULT 'USD',
+    "salaryType" "SalaryType",
     "location" TEXT,
+    "workMode" "WorkMode",
     "status" "JobApplicationStatus" NOT NULL,
     "dateApplied" TIMESTAMP(3) NOT NULL,
     "datePosted" TIMESTAMP(3),
@@ -170,6 +182,15 @@ CREATE INDEX "job_application_status_idx" ON "job_application"("status");
 
 -- CreateIndex
 CREATE INDEX "job_application_dateApplied_idx" ON "job_application"("dateApplied");
+
+-- CreateIndex
+CREATE INDEX "job_application_platform_idx" ON "job_application"("platform");
+
+-- CreateIndex
+CREATE INDEX "job_application_workMode_idx" ON "job_application"("workMode");
+
+-- CreateIndex
+CREATE INDEX "job_application_salaryType_idx" ON "job_application"("salaryType");
 
 -- CreateIndex
 CREATE INDEX "Resume_userId_idx" ON "Resume"("userId");

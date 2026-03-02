@@ -133,20 +133,41 @@ enum JobApplicationStatus {
   REJECTED
 }
 
+enum SalaryType {
+  YEARLY
+  HOURLY
+  MONTHLY
+  WEEKLY
+}
+
+enum WorkMode {
+  REMOTE
+  HYBRID
+  ONSITE
+}
+
+enum JobPlatform {
+  LINKEDIN
+  INDEED
+  HANDSHAKE
+  GLASSDOOR
+  COMPANY_SITE
+  OTHER
+}
+
 model JobApplication {
   id             String   @id @default(cuid())
   userId         String
   company        String
   role           String
+  platform       JobPlatform?
   applicationUrl String?
   salaryMin      Int?
   salaryMax      Int?
-  salaryCurrency String  @default("USD")
-  // salaryType     String
+  salaryCurrency String?  @default("USD")
+  salaryType     SalaryType?
   location       String?
-  // isRemote       Boolean
-  // isHybrid       Boolean
-  // isOnsite       Boolean
+  workMode       WorkMode?
   status         JobApplicationStatus
   dateApplied    DateTime
   datePosted     DateTime?
@@ -159,6 +180,9 @@ model JobApplication {
   @@index([userId])
   @@index([status])
   @@index([dateApplied])
+  @@index([platform])
+  @@index([workMode])
+  @@index([salaryType])
   @@map("job_application")
 }
 

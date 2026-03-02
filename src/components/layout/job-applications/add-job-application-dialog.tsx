@@ -82,7 +82,10 @@ export function AddJobApplicationDialog() {
       salaryMin: null,
       salaryMax: null,
       salaryCurrency: "USD",
+      salaryType: null,
       applicationUrl: "",
+      workMode: null,
+      platform: null,
       datePosted: today,
       notes: "",
     },
@@ -105,6 +108,7 @@ export function AddJobApplicationDialog() {
       const normalized = {
         company: data.company,
         role: data.role,
+        status: data.status,
         location: data.location?.trim() || null,
         salaryMin: data.salaryMin ?? null,
         salaryMax: data.salaryMax ?? null,
@@ -112,7 +116,9 @@ export function AddJobApplicationDialog() {
           data.salaryMin || data.salaryMax
             ? (data.salaryCurrency ?? "USD")
             : null,
-        status: data.status,
+        salaryType: data.salaryType ?? null,
+        workMode: data.workMode ?? null,
+        platform: data.platform ?? null,
         applicationUrl: data.applicationUrl?.trim() || null,
         notes: data.notes?.trim() || null,
       };
@@ -221,9 +227,34 @@ export function AddJobApplicationDialog() {
                     </Field>
                   )}
                 />
+                {/* Work Mode */}
+                <Controller
+                  name="workMode"
+                  control={form.control}
+                  render={({ field }) => (
+                    <Field>
+                      <FieldLabel>Work Mode</FieldLabel>
+                      <Select
+                        value={field.value ?? ""}
+                        onValueChange={(value) =>
+                          field.onChange(value === "" ? null : value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select mode" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="REMOTE">Remote</SelectItem>
+                          <SelectItem value="HYBRID">Hybrid</SelectItem>
+                          <SelectItem value="ONSITE">Onsite</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                  )}
+                />
 
                 {/* Salary */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   {/* Salary Min */}
                   <Controller
                     name="salaryMin"
@@ -309,7 +340,64 @@ export function AddJobApplicationDialog() {
                       </Field>
                     )}
                   />
+                  {/* Salary Type */}
+                  <Controller
+                    name="salaryType"
+                    control={form.control}
+                    render={({ field }) => (
+                      <Field>
+                        <FieldLabel>Salary Type</FieldLabel>
+                        <Select
+                          value={field.value ?? ""}
+                          onValueChange={(value) =>
+                            field.onChange(value === "" ? null : value)
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="YEARLY">Yearly</SelectItem>
+                            <SelectItem value="MONTHLY">Monthly</SelectItem>
+                            <SelectItem value="WEEKLY">Weekly</SelectItem>
+                            <SelectItem value="HOURLY">Hourly</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </Field>
+                    )}
+                  />
                 </div>
+
+                {/* Platform */}
+                <Controller
+                  name="platform"
+                  control={form.control}
+                  render={({ field }) => (
+                    <Field>
+                      <FieldLabel>Platform</FieldLabel>
+                      <Select
+                        value={field.value ?? ""}
+                        onValueChange={(value) =>
+                          field.onChange(value === "" ? null : value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select platform" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="LINKEDIN">LinkedIn</SelectItem>
+                          <SelectItem value="INDEED">Indeed</SelectItem>
+                          <SelectItem value="HANDSHAKE">Handshake</SelectItem>
+                          <SelectItem value="GLASSDOOR">Glassdoor</SelectItem>
+                          <SelectItem value="COMPANY_SITE">
+                            Company Site
+                          </SelectItem>
+                          <SelectItem value="OTHER">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                  )}
+                />
 
                 {/* Application URL */}
                 <Controller
@@ -405,27 +493,33 @@ export function AddJobApplicationDialog() {
                 <Controller
                   name="notes"
                   control={form.control}
-                  render={({ field }) => (
-                    <Field>
-                      <FieldLabel>Notes</FieldLabel>
-                      <InputGroup>
-                        <InputGroupTextarea
-                          {...field}
-                          value={field.value ?? ""}
-                          placeholder="Follow-up date, recruiter, etc."
-                          rows={4}
-                        />
-                        <InputGroupAddon align="block-end">
-                          <InputGroupText className="tabular-nums">
-                            {field.value}/500
-                          </InputGroupText>
-                        </InputGroupAddon>
-                      </InputGroup>
-                      <FieldDescription>
-                        Optional notes about the application.
-                      </FieldDescription>
-                    </Field>
-                  )}
+                  render={({ field }) => {
+                    const length = field.value?.length ?? 0;
+                    const isOverLimit = length > 500;
+                    return (
+                      <Field>
+                        <FieldLabel>Notes</FieldLabel>
+                        <InputGroup>
+                          <InputGroupTextarea
+                            {...field}
+                            value={field.value ?? ""}
+                            placeholder="Follow-up date, recruiter, etc."
+                            rows={4}
+                          />
+                          <InputGroupAddon align="block-end">
+                            <InputGroupText
+                              className={`tabular-nums ${isOverLimit ? "text-red-500" : ""}`}
+                            >
+                              {field.value?.length ?? 0}/500
+                            </InputGroupText>
+                          </InputGroupAddon>
+                        </InputGroup>
+                        <FieldDescription>
+                          Optional notes about the application.
+                        </FieldDescription>
+                      </Field>
+                    );
+                  }}
                 />
               </FieldGroup>
             </form>

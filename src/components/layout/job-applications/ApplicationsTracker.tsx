@@ -23,10 +23,20 @@ export interface JobApplication {
   createdAt: Date;
   updatedAt: Date;
   location?: string | null;
+  workMode?: "REMOTE" | "HYBRID" | "ONSITE" | null;
   salaryMin?: number | null;
   salaryMax?: number | null;
   salaryCurrency?: string | null;
+  salaryType?: "YEARLY" | "MONTHLY" | "HOURLY" | null;
   datePosted?: string | null;
+  platform?:
+    | "LINKEDIN"
+    | "INDEED"
+    | "HANDSHAKE"
+    | "GLASSDOOR"
+    | "COMPANY_SITE"
+    | "OTHER"
+    | null;
   applicationUrl?: string | null;
   notes?: string | null;
 }

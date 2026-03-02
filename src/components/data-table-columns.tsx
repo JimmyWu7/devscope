@@ -8,6 +8,12 @@ import Link from "next/link";
 import { ExternalLinkIcon } from "lucide-react";
 import { Checkbox } from "./ui/checkbox";
 import { JobApplication } from "./layout/job-applications/ApplicationsTracker";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
 
 const EMPTY = "-----";
 
@@ -48,7 +54,7 @@ function formatSalary(
     return formatted.replace(/\d+(\.\d+)?/, (match) => `${match}K`);
   };
 
-  if (min != null && max != null) return `${formatK(min)} - ${formatK(max)}`;
+  if (min != null && max != null) return `${formatK(min)}—${formatK(max)}`;
   return formatK((min ?? max)!);
 }
 
@@ -92,9 +98,18 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-2">
-          <span className="max-w-40 truncate font-medium">
-            {row.getValue("company")}
-          </span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="max-w-40 truncate font-medium">
+                  {row.getValue("company")}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{row.getValue("company")}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       );
     },
@@ -107,9 +122,18 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-2">
-          <span className="max-w-40 truncate font-medium">
-            {row.getValue("role")}
-          </span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="max-w-40 truncate font-medium">
+                  {row.getValue("role")}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{row.getValue("role")}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       );
     },
@@ -154,18 +178,70 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
     },
   },
   {
+    accessorKey: "workMode",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Work Mode" />
+    ),
+    cell: ({ row }) => {
+      const workMode = row.getValue("workMode") as
+        | "REMOTE"
+        | "HYBRID"
+        | "ONSITE"
+        | null;
+
+      if (!workMode) return renderEmpty();
+
+      const label =
+        workMode === "REMOTE"
+          ? "Remote"
+          : workMode === "HYBRID"
+            ? "Hybrid"
+            : workMode === "ONSITE"
+              ? "Onsite"
+              : null;
+
+      const color =
+        workMode === "REMOTE"
+          ? "text-green-500"
+          : workMode === "HYBRID"
+            ? "text-yellow-500"
+            : "text-blue-500";
+
+      return (
+        <div className="flex gap-2">
+          <span
+            className={`px-2 py-1 rounded-md font-medium text-xs ${color} bg-muted`}
+          >
+            {label}
+          </span>
+          {/* <span className={`font-medium ${color}`}>{label}</span> */}
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "location",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Location" />
     ),
     cell: ({ row }) => {
-      const location = row.getValue("location") as string | null | undefined;
+      const location = row.getValue("location") as string | null;
+      if (!location) return renderEmpty();
 
       return (
         <div className="flex gap-2">
-          <span className="max-w-35 truncate font-medium">
-            {displayOrEmpty(location)}
-          </span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="max-w-40 truncate font-medium cursor-default">
+                  {location}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{location}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       );
     },
@@ -176,21 +252,37 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
       min: row.salaryMin,
       max: row.salaryMax,
       currency: row.salaryCurrency,
+      type: row.salaryType,
     }),
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Salary" />
     ),
     cell: ({ row }) => {
-      const { min, max, currency } = row.getValue("salary") as {
+      const { min, max, currency, type } = row.getValue("salary") as {
         min?: number;
         max?: number;
         currency?: string;
+        type?: string | null;
       };
+
+      if (min == null && max == null) return renderEmpty();
+
+      const salaryText = formatSalary(min, max, currency ?? "USD");
+
+      const suffix =
+        type === "YEARLY"
+          ? "/yr"
+          : type === "MONTHLY"
+            ? "/mo"
+            : type === "HOURLY"
+              ? "/hr"
+              : "";
 
       return (
         <div className="flex gap-2">
           <span className="font-medium max-w-40">
-            {formatSalary(min, max, currency)}
+            {salaryText}
+            {suffix && ` ${suffix}`}
           </span>
         </div>
       );
@@ -219,14 +311,18 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
   {
     accessorKey: "applicationUrl",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="URL" />
+      <DataTableColumnHeader column={column} title="Application URL" />
     ),
     cell: ({ row }) => {
-      const url = row.getValue("applicationUrl") as string | null;
+      const url = row.original.applicationUrl;
+      const platform = row.original.platform;
 
-      if (!url || url.trim() === "") {
-        return <span className="text-muted-foreground">{EMPTY}</span>;
-      }
+      if (!url) return renderEmpty();
+
+      const label =
+        platform && platform.length > 0
+          ? platform.charAt(0) + platform.slice(1).toLowerCase()
+          : "Open";
 
       return (
         <Link
@@ -235,7 +331,7 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
           rel="noopener noreferrer"
           className="flex items-center gap-1 text-blue-400"
         >
-          View <ExternalLinkIcon className="size-3" />
+          {label} <ExternalLinkIcon className="size-3" />
         </Link>
       );
     },
@@ -246,13 +342,25 @@ export const DataTableColumns: ColumnDef<JobApplication>[] = [
       <DataTableColumnHeader column={column} title="Notes" />
     ),
     cell: ({ row }) => {
-      const notes = row.getValue("notes") as string | null | undefined;
+      const notes = row.getValue("notes") as string | null;
+      if (!notes || notes.trim() === "") {
+        return renderEmpty();
+      }
 
       return (
         <div className="flex gap-2">
-          <span className="max-w-30 truncate font-medium">
-            {displayOrEmpty(notes)}
-          </span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="max-w-40 truncate font-medium">
+                  {displayOrEmpty(notes)}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-sm wrap-break-word">
+                <p>{displayOrEmpty(notes)}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       );
     },

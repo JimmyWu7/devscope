@@ -24,6 +24,22 @@ export const jobApplicationSchema = z
       .default("USD")
       .nullable()
       .optional(),
+    salaryType: z
+      .enum(["YEARLY", "HOURLY", "MONTHLY", "WEEKLY"])
+      .optional()
+      .nullable(),
+    workMode: z.enum(["REMOTE", "HYBRID", "ONSITE"]).optional().nullable(),
+    platform: z
+      .enum([
+        "LINKEDIN",
+        "INDEED",
+        "HANDSHAKE",
+        "GLASSDOOR",
+        "COMPANY_SITE",
+        "OTHER",
+      ])
+      .optional()
+      .nullable(),
     applicationUrl: z.string().url().nullable().optional().or(z.literal("")),
     datePosted: z.string().min(1, "Date is required"),
     notes: z.string().max(500).nullable().optional(),
@@ -38,7 +54,7 @@ export const jobApplicationSchema = z
     {
       message: "Minimum salary cannot be greater than maximum salary",
       path: ["salaryMin"], // You can also add `salaryMax` here if you want to highlight it
-    }
+    },
   );
 
 export type JobApplicationFormValues = z.infer<typeof jobApplicationSchema>;

@@ -14,8 +14,11 @@ export interface JobApplication {
   location: string;
   salaryMin: string;
   salaryMax: string;
+  salaryType?: string;
   dateApplied: string;
   datePosted: string;
+  platform?: string;
+  workMode?: string;
   applicationUrl: string;
   notes: string;
 }
@@ -24,6 +27,6 @@ export interface StorageData {
   devscopeToken?: string;
   devscopeUser?: User;
   devscopeStatus?: Status;
-  themeMode?: ThemeMode; 
+  themeMode?: ThemeMode;
   privacyMode?: boolean;
 }
