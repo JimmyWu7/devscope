@@ -14,7 +14,7 @@ import { toast } from "sonner";
 
 export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
   const [isLoading, setIsLoading] = useState(false);
-  // If callbackUrl exists, use it. Otherwise default to dashboard.
+  // If callbackUrl exists (extension callback), use it. Otherwise default to dashboard.
   const finalCallbackUrl = callbackUrl || "/dashboard";
 
   const handleSocialAuth = async (provider: "github" | "google") => {

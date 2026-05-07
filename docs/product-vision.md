@@ -1,21 +1,35 @@
 # Product Vision — DevScope
 
 ## 🎯 Problem
-Developers rely on GitHub to showcase their work, but raw repositories and commit histories are difficult to interpret. Recruiters and hiring managers struggle to quickly understand a developer’s activity, consistency, and impact from GitHub alone.
 
-GitHub provides data, but not insight. There is no clear summary of recent contributions, language usage, or overall activity in a recruiter-friendly format.
+Job seekers and developers face two disconnected problems:
+
+1. Job applications are scattered across platforms (LinkedIn, Indeed, Handshake, company websites) with no reliable tracking or confirmation system.
+2. GitHub activity is difficult to translate into meaningful career insights for recruiters or personal evaluation.
+
+As a result, developers lack a unified view of their job search progress and technical impact.
 
 ---
 
 ## 👤 Target Users
 
-### Primary User
-**Individual developers** who want to clearly showcase their recent work, activity, and skills.
+### Primary Users
 
-### Secondary User
-**Recruiters and hiring managers** who want a fast, high-level view of a developer’s GitHub activity without manually digging through repositories.
+Software engineers and job seekers actively applying to roles.
+
+### Secondary Users
+
+Recruiters and hiring managers who want quick visibility into candidate activity and consistency.
 
 ---
 
 ## 💡 Value Proposition
-**DevScope helps developers communicate their real development activity by transforming raw GitHub data into clear insights and recruiter-friendly public profiles.**
+
+DevScope unifies job application tracking and GitHub activity into a single developer career dashboard, enabling users to:
+
+- Track every job application in one place
+- Automatically capture application data via a Chrome extension
+- Visualize interview and application performance
+- Connect real coding activity (GitHub) with job search progress
+
+The goal is to make a developer’s career progress measurable, structured, and easy to understand.

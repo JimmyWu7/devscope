@@ -21,28 +21,6 @@ const page = async () => {
     where: { userId: session.user.id },
   });
 
-  const sync = await prisma.githubSync.findUnique({
-    where: { userId: session.user.id },
-  });
-
-  if (!sync) {
-    const githubAccount = await prisma.account.findFirst({
-      where: { userId: session.user.id, providerId: "github" },
-    });
-
-    if (githubAccount?.accessToken) {
-      await fetch(`${process.env.BETTER_AUTH_URL}/api/github/sync`, {
-        method: "POST",
-        headers: {
-          Cookie: (await headers()).get("cookie") ?? "",
-        },
-      });
-    }
-  }
-
-  const latestSync = await prisma.githubSync.findUnique({
-    where: { userId: session.user.id },
-  });
 
   return (
     <div>

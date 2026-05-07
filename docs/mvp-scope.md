@@ -1,30 +1,69 @@
 # MVP Scope — DevScope
 
-This document defines the **locked scope** for Phase 1 (MVP).  
-Anything not listed under MVP is explicitly out of scope.
+## Objective
+
+Deliver a unified system for tracking job applications and visualizing developer activity through GitHub integration.
 
 ---
 
-## ✅ Must-Ship Features (MVP)
+## ✅ In Scope (MVP)
 
-- GitHub OAuth authentication
-- Fetch user’s public repositories
-- Fetch recent commits (last 90 days)
-- Developer dashboard:
-  - Repository list
-  - Commit activity count
-  - Language usage summary
-- Public profile page at `/u/[username]`
-- Database persistence for users, repositories, and commits
+### Authentication
+
+- GitHub OAuth login
 
 ---
 
-## 🚫 Out of Scope (Phase 1)
+### GitHub Integration
 
-These features are intentionally excluded to maintain focus:
+- Fetch user profile
+- Sync public repositories
+- Fetch contribution activity
+- Display repositories in dashboard
+
+---
+
+### Job Application System
+
+- Create job applications manually
+- Store structured job data:
+  - Company
+  - Role
+  - Salary
+  - Location
+  - Work mode
+  - Platform
+- Update application status:
+  - Applied
+  - Interview
+  - Offer
+  - Rejected
+- Search, filter, and sort applications
+
+---
+
+### Chrome Extension
+
+- Extract job data from supported platforms
+- Send structured job data to backend
+- Manual + auto capture modes
+
+---
+
+### Dashboard
+
+- View job application statistics
+- Track monthly applications
+- View interview rate
+- View GitHub contribution summary
+
+---
+
+## 🚫 Out of Scope (MVP)
 
 - AI-generated summaries
-- Weekly or monthly snapshots
-- Portfolio or showcase mode
-- Advanced analytics and charts
-- Notifications or alerts
+- Resume parsing intelligence
+- Notifications system
+- Advanced analytics dashboards
+- Job scraping without user interaction
+- Multi-user collaboration features

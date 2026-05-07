@@ -35,11 +35,19 @@ export async function DELETE(
   }
 
   try {
-    // Delete from Cloudflare R2
+    // Delete resume PDF from Cloudflare R2
     await r2.send(
       new DeleteObjectCommand({
         Bucket: process.env.R2_BUCKET_NAME!,
         Key: resume.fileKey,
+      }),
+    );
+
+    // Delete thumbnail from CloudFlare R2
+    await r2.send(
+      new DeleteObjectCommand({
+        Bucket: process.env.R2_BUCKET_NAME!,
+        Key: resume.thumbnailKey!,
       }),
     );
 

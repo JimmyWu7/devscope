@@ -31,7 +31,7 @@ export async function fetchGithubContributions(
       query,
       variables: { login: username },
     }),
-    // Next.js cache — revalidate every 6 hours
+    // Next.js cache — update every 6 hours
     next: { revalidate: 60 * 60 * 6 },
   });
 

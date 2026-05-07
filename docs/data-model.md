@@ -1,41 +1,110 @@
 # Data Model — DevScope
 
-This document outlines the initial database entities for the MVP.
-The model is intentionally simple and relational.
+## Overview
+
+The data model supports two main systems:
+
+1. Developer identity + GitHub integration
+2. Job application tracking system
 
 ---
 
 ## User
+
+Represents a DevScope user authenticated via GitHub.
+
 - id
+- name
+- email
+- image
+- createdAt
+- updatedAt
+
+---
+
+## GithubProfile
+
+Stores GitHub identity metadata.
+
+- id
+- userId
 - githubId
 - username
-- name
 - avatarUrl
+- profileUrl
 - createdAt
+- updatedAt
 
 ---
 
-## Repository
+## GithubRepo
+
+Cached repository data from GitHub.
+
 - id
-- githubRepoId
+- userId
+- repoId
 - name
+- fullName
 - description
-- primaryLanguage
 - stars
-- userId
+- forks
+- language
+- isFork
+- isPrivate
+- htmlUrl
+- pushedAt
+- createdAt
+- updatedAt
 
 ---
 
-## Commit
+## GithubSync
+
+Tracks last sync time with GitHub API.
+
 - id
-- githubCommitSha
-- message
-- committedAt
-- repositoryId
+- userId
+- syncedAt
 
 ---
 
-## SyncStatus
+## JobApplication
+
+Core entity for tracking job applications.
+
+- id
 - userId
-- lastSyncedAt
+- company
+- role
+- platform
+- applicationUrl
+- salaryMin
+- salaryMax
+- salaryCurrency
+- salaryType
+- location
+- workMode
 - status
+- dateApplied
+- datePosted
+- notes
+- createdAt
+- updatedAt
+
+---
+
+## Resume
+
+Stores metadata for resumes uploaded by users.
+
+Resume files are stored in Cloudflare R2, while only metadata is stored in the database.
+
+- id
+- userId
+- fileName
+- fileKey (R2 object key)
+- thumbnailKey (optional R2 object key)
+- fileSize
+- createdAt
+- updatedAt
